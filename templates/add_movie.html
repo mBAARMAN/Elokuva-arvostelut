@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Lisää elokuva</title>
+</head>
+
+<body>
+  <h1>Lisää elokuva</h1>
+  <form action="/create_movie" method="post">
+    <p>
+      Elokuvan nimi: <br />
+      <input type="text" name="title" />
+    </p>
+    <p>
+      Ohjaaja: <br />
+      <input type="text" name="director" />
+    </p>
+    <p>
+      Julkaisuvuosi: <br />
+      <input type="text" name="year" />
+    </p>
+    <p>
+      Elokuvan kuvaus: <br />
+      <textarea name="description" rows="8" cols="60"></textarea>
+    </p>
+    <input type="submit" value="Lisää elokuva" />
+  </form>
+</body>
+
+</html>
