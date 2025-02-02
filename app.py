@@ -14,6 +14,16 @@ def index():
     all_movies = movies.get_movies()
     return render_template("index.html", movies=all_movies)
 
+@app.route("/find_movie")
+def find_movie():
+    query = request.args.get("query")
+    if query:
+        results = movies.find_movies(query)
+    else:
+        query = ""
+        results = []
+    return render_template("find_movie.html",query=query, results=results)
+
 @app.route("/movie/<int:movie_id>")
 def show_movie(movie_id):
     movie = movies.get_movie(movie_id)
