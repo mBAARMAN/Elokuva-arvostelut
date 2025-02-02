@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import abort, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 import db
@@ -48,11 +48,17 @@ def create_movie():
 @app.route("/edit_movie/<int:movie_id>")
 def edit_movie(movie_id):
     movie = movies.get_movie(movie_id)
+    if movie["user_id"] != session["user_id"]:
+        abort(403)
     return render_template("edit_movie.html", movie=movie)
 
 @app.route("/update_movie", methods=["POST"])
 def update_movie():
     movie_id = request.form["movie_id"]
+    movie = movies.get_movie(movie_id)
+    if movie["user_id"] != session["user_id"]:
+        abort(403)
+
     title = request.form["title"]
     director = request.form["director"]
     year = request.form["year"]
@@ -64,8 +70,12 @@ def update_movie():
 
 @app.route("/remove_movie/<int:movie_id>", methods=["GET", "POST"])
 def remove_movie(movie_id):
+
+    movie = movies.get_movie(movie_id)
+    if movie["user_id"] != session["user_id"]:
+        abort(403)
+
     if request.method == "GET":
-        movie = movies.get_movie(movie_id)
         return render_template("remove_movie.html", movie=movie)
 
     if request.method == "POST":
