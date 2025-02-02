@@ -17,6 +17,10 @@
     {{ movie.year }} - {{ movie.director }}
   </p>
   <p>
+    ({% set genre_list = movie.genre.split(',') %}
+    {{ genre_list | join(', ') }} )
+  </p>
+  <p>
     {{ movie.description }}
   </p>
   <p>

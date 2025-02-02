@@ -10,6 +10,7 @@ CREATE TABLE movies (
     director TEXT,
     year INTEGER,
     description TEXT,
+    genre TEXT,
     user_id INTEGER REFERENCES users
 );
 

@@ -48,9 +48,10 @@ def create_movie():
     director = request.form["director"]
     year = request.form["year"]
     description = request.form["description"]
+    genre = ",".join(request.form.getlist("genre"))
     user_id = session["user_id"]
 
-    movies.add_movie(title, director, year, description, user_id)
+    movies.add_movie(title, director, year, description, genre, user_id)
 
     return redirect("/")
 
@@ -62,6 +63,7 @@ def edit_movie(movie_id):
         abort(404)
     if movie["user_id"] != session["user_id"]:
         abort(403)
+
     return render_template("edit_movie.html", movie=movie)
 
 @app.route("/update_movie", methods=["POST"])
@@ -78,8 +80,9 @@ def update_movie():
     director = request.form["director"]
     year = request.form["year"]
     description = request.form["description"]
+    genre = ",".join(request.form.getlist("genre"))
 
-    movies.update_movie(movie_id, title, director, year, description)
+    movies.update_movie(movie_id, title, director, year, description, genre)
 
     return redirect("/movie/" + str(movie_id))
 
