@@ -10,19 +10,26 @@
 
   {% if session.username %}
   <p>
-    Olet kirjautunut nimellä {{ session.username }}, id-numero {{ session.user_id }}
+    Olet kirjautunut nimellä {{ session.username }}#{{ session.user_id }}
   </p>
-  {% endif %}
+  <p>
+    <a href="/logout">Kirjaudu ulos</a>
+  </p>
+  <p>
+    <a href="/new_movie">Lisää elokuva</a>
+  </p>
+
+  {% else %}
 
   <p>
     <a href="/login">Kirjaudu sisään</a>
     <a href="/register">Luo tunnus</a>
-    <a href="/logout">Kirjaudu ulos</a>
   </p>
 
+  {% endif %}
+
   <p>
-    <a href="/new_movie">Lisää elokuva</a>
-    <a href="/find_movie">Etsi elokuvaa</a>
+    <a href="/find_movie">Hae elokuvaa</a>
   </p>
 
   <h2>Elokuvat</h2>
