@@ -23,6 +23,13 @@
   <p>
     <a href="/new_movie">Lisää elokuva</a>
   </p>
+
+  <h2>Elokuvat</h2>
+  <ul>
+    {% for movie in movies %}
+    <li><a href="/movie/{{ movie.id }}">{{ movie.title }}</a></li>
+    {% endfor %}
+  </ul>
 </body>
 
 </html>

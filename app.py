@@ -11,7 +11,13 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    all_movies = movies.get_movies()
+    return render_template("index.html", movies=all_movies)
+
+@app.route("/movie/<int:movie_id>")
+def show_movie(movie_id):
+    movie = movies.get_movie(movie_id)
+    return render_template("show_movie.html", movie=movie)
 
 @app.route("/new_movie")
 def new_movie():
