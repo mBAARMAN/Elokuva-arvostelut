@@ -1,11 +1,11 @@
 import sqlite3
+import re
 from flask import Flask
 from flask import abort, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 import db
 import movies
-import re
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
