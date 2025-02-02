@@ -58,6 +58,8 @@ def create_movie():
     if not description or len(description) > 1000:
         abort(403)
     genre = ",".join(request.form.getlist("genre"))
+    if not genre:
+        abort(403)
 
     user_id = session["user_id"]
 
@@ -87,10 +89,20 @@ def update_movie():
         abort(403)
 
     title = request.form["title"]
+    if not title or len(title) > 50:
+        abort(403)
     director = request.form["director"]
+    if not director or len(director) > 50:
+        abort(403)
     year = request.form["year"]
+    if not re.search("^[1-9][0-9]{0,3}$", year):
+        abort(403)
     description = request.form["description"]
+    if not description or len(description) > 1000:
+        abort(403)
     genre = ",".join(request.form.getlist("genre"))
+    if not genre:
+        abort(403)
 
     movies.update_movie(movie_id, title, director, year, description, genre)
 
