@@ -158,15 +158,21 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
+    """    if request.method == "GET":
+            return render_template("login.html")"""
 
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        if not username or not password:
+            return error("Kaikki kentät tulee täyttää", "Virhe kirjautumisessa")
 
         sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])[0]
+        result = db.query(sql, [username])
+        if not result:
+            return error("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
+
+        result = result[0]
         user_id = result["id"]
         password_hash = result["password_hash"]
 
@@ -174,8 +180,8 @@ def login():
             session["user_id"] = user_id
             session["username"] = username
             return redirect("/")
-        else:
-            return "VIRHE: väärä tunnus tai salasana"
+        return error("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
+    return render_template("login.html")
 
 @app.route("/logout")
 def logout():
