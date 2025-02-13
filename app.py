@@ -14,6 +14,9 @@ def require_login():
     if "user_id" not in session:
         abort(403)
 
+def error(message, type):
+    return render_template("error.html", message=message, type=type)
+
 @app.route("/")
 def index():
     all_movies = movies.get_movies()
@@ -127,26 +130,31 @@ def remove_movie(movie_id):
         else:
             return redirect("/movie/" + str(movie_id))
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password1 = request.form["password1"]
+        password2 = request.form["password2"]
+        password_hash = generate_password_hash(password1)
+
+        if not username or not password1 or not password2:
+            return error("Kaikki kentät tulee täyttää", "Virhe käyttäjän luomisessa")
+        if password1 != password2:
+            return error("Salasanat eivät täsmää", "Virhe käyttäjän luomisessa")
+        if len(username) < 3:
+            return error("Käyttäjänimen tulee olla vähintään 3 merkkiä pitkä", "Virhe käyttäjän luomisessa")
+        if len(password1) < 5:
+            return error("Salasanan tulee olla vähintään 5 merkkiä pitkä", "Virhe käyttäjän luomisessa")
+
+        try:
+            sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
+            db.execute(sql, [username, password_hash])
+        except sqlite3.IntegrityError:
+            return error("Käyttäjänimi varattu", "Virhe käyttäjän luomisessa")
+        return render_template("account_created.html")
     return render_template("register.html")
 
-@app.route("/create", methods=["POST"])
-def create():
-    username = request.form["username"]
-    password1 = request.form["password1"]
-    password2 = request.form["password2"]
-    if password1 != password2:
-        return "VIRHE: salasanat eivät ole samat"
-    password_hash = generate_password_hash(password1)
-
-    try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
-    except sqlite3.IntegrityError:
-        return "VIRHE: tunnus on jo varattu"
-
-    return "Tunnus luotu"
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
