@@ -6,14 +6,17 @@
   <h1>Käyttäjä {{ user.username }}</h1>
   <p>
     <p>
-      Käyttäjällä on yhteensä {{ reviews | count }} arvostelua
+      Käyttäjällä on yhteensä {{ reviews | length }} arvostelua
     </p>
+
     <h2>Arvostelut</h2>
-    <ul>
-        {% for review in reviews %}
-        <li><a href="/review/{{ review.id }}"></a></li>
-        {% endfor %}
-    </ul>
-    <a href="/">Takaisin</a>
+    {% for review in reviews %}
+      <li><a href="/review/{{ review.id }}">{{ review.movie_title }}</a></li>
+    {% else %}
+      <p>Ei arvosteluja.</p>
+    {% endfor %}
+  </p>
+  <p>
+    <button onclick="history.back()">Takaisin</button>
   </p>
 {% endblock %}

@@ -1,7 +1,8 @@
 import db
 
 def add_movie(title, director, year, description, genre, user_id):
-    sql = "INSERT INTO movies (title, director, year, description, genre, user_id) VALUES (?, ?, ?, ?, ?, ?)"
+    sql = """INSERT INTO movies (title, director, year, description, genre, user_id) 
+    VALUES (?, ?, ?, ?, ?, ?)"""
     db.execute(sql, [title, director, year, description, genre, user_id])
 
 def get_movies():

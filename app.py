@@ -8,6 +8,7 @@ import db
 import movies
 import users
 import error
+import reviews
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -26,8 +27,8 @@ def show_user(user_id):
     user = users.get_user(user_id)
     if not user:
         return error.page("Käyttäjää ei löytynyt", "Virhe sivun hakemisessa")
-    reviews = users.get_reviews(user_id)
-    return render_template("show_user.html", user=user)
+    reviews_list = reviews.get_reviews_by_user(user_id)
+    return render_template("show_user.html", user=user, reviews=reviews_list)
 
 @app.route("/find_movie")
 def find_movie():
@@ -44,7 +45,8 @@ def show_movie(movie_id):
     movie = movies.get_movie(movie_id)
     if not movie:
         return error.page("Elokuvaa ei löytynyt", "Virhe sivun hakemisessa")
-    return render_template("show_movie.html", movie=movie)
+    reviews_list = reviews.get_reviews(movie_id)
+    return render_template("show_movie.html", movie=movie, reviews=reviews_list)
 
 @app.route("/new_movie")
 def new_movie():
@@ -70,7 +72,7 @@ def create_movie():
     description = request.form["description"]
     if not description or len(description) > 1000 or not description.strip():
         return error.page("Virheellinen kuvaus", "Virhe elokuvan lisäämisessä")
-    
+
     allowed_genres = {"draama", "komedia", "dokumentti", "musikaali", "toiminta", 
                       "seikkailu", "rakkaus", "kauhu", "scifi", "western"}
 
@@ -86,6 +88,34 @@ def create_movie():
     movies.add_movie(title, director, year, description, genre, user_id)
 
     return redirect("/")
+
+@app.route("/create_review", methods=["POST"])
+def create_review():
+    require_login()
+
+    rating = int(request.form["rating"])
+    review = request.form["review"]
+    movie_id = request.form["movie_id"]
+
+    if not movie_id:
+        return error.page("Elokuvaa ei löytynyt", "Virhe arvostelun lisäämisessä")
+    
+    movie = movies.get_movie(movie_id)
+    if not movie:
+        return error.page("Elokuvaa ei löytynyt", "Virhe arvostelun lisäämisessä")
+
+    user_id = session.get("user_id")
+    if not user_id:
+        return error.page("Käyttäjä ei ole kirjautunut", "Virhe arvostelun lisäämisessä")
+
+    rating_id = db.query("SELECT id FROM ratings WHERE value = ?", [rating])
+    if not rating_id:
+        return error.page("Virheellinen arvosana", "Virhe arvostelun lisäämisessä")
+
+    rating_id = rating_id[0]["id"]
+    reviews.add_review(movie_id, user_id, rating_id, review)
+
+    return redirect("/movie/" + str(movie_id))
 
 @app.route("/edit_movie/<int:movie_id>", methods=["GET", "POST"])
 def edit_movie(movie_id):

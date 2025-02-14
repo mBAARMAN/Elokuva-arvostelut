@@ -14,12 +14,17 @@ CREATE TABLE movies (
     user_id INTEGER REFERENCES users
 );
 
+CREATE TABLE ratings (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    value INTEGER CHECK(value BETWEEN 1 AND 5) UNIQUE
+);
+
 CREATE TABLE reviews (
     id INTEGER PRIMARY KEY,
-    movie_id INTEGER,
-    user_id INTEGER,
-    rating INTEGER CHECK(rating BETWEEN 1 AND 5),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (movie_id) REFERENCES movies (id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    movie_id INTEGER REFERENCES movies,
+    user_id INTEGER REFERENCES users,
+    rating_id INTEGER REFERENCES ratings(id),
+    review TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
