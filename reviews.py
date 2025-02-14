@@ -26,6 +26,22 @@ def get_reviews(movie_id):
             ORDER BY reviews.id DESC"""
     return db.query(sql, [movie_id])
 
+def get_review(review_id):
+    sql = """SELECT reviews.id,
+                    reviews.review,
+                    ratings.value rating_value, 
+                    movies.id movie_id,
+                    movies.title movie_title,
+                    users.id user_id,
+                    users.username
+            FROM reviews
+            JOIN ratings ON reviews.rating_id = ratings.id
+            JOIN movies ON reviews.movie_id = movies.id
+            JOIN users ON reviews.user_id = users.id
+            WHERE reviews.id = ?"""
+    result = db.query(sql, [review_id])
+    return result[0] if result else None
+
 def get_reviews_by_user(user_id):
     sql = """SELECT reviews.id, movies.title movie_title, ratings.value rating, reviews.review
              FROM reviews

@@ -7,8 +7,8 @@ import config
 import db
 import movies
 import users
-import error
 import reviews
+import error
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -99,7 +99,7 @@ def create_review():
 
     if not movie_id:
         return error.page("Elokuvaa ei löytynyt", "Virhe arvostelun lisäämisessä")
-    
+
     movie = movies.get_movie(movie_id)
     if not movie:
         return error.page("Elokuvaa ei löytynyt", "Virhe arvostelun lisäämisessä")
@@ -116,6 +116,13 @@ def create_review():
     reviews.add_review(movie_id, user_id, rating_id, review)
 
     return redirect("/movie/" + str(movie_id))
+
+@app.route("/review/<int:review_id>")
+def show_review(review_id):
+    review = reviews.get_review(review_id)
+    if not review:
+        return error.page("Arvostelua ei löytynyt", "Virhe sivun hakemisessa")
+    return render_template("show_review.html", review=review)
 
 @app.route("/edit_movie/<int:movie_id>", methods=["GET", "POST"])
 def edit_movie(movie_id):
