@@ -7,6 +7,7 @@ import config
 import db
 import movies
 import users
+import error
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -14,9 +15,6 @@ app.secret_key = config.secret_key
 def require_login():
     if "user_id" not in session:
         abort(403)
-
-def error(message, type):
-    return render_template("error.html", message=message, type=type)
 
 @app.route("/")
 def index():
@@ -27,7 +25,7 @@ def index():
 def show_user(user_id):
     user = users.get_user(user_id)
     if not user:
-        return error("Käyttäjää ei löytynyt", "Virhe sivun hakemisessa")
+        return error.page("Käyttäjää ei löytynyt", "Virhe sivun hakemisessa")
     reviews = users.get_reviews(user_id)
     return render_template("show_user.html", user=user)
 
@@ -45,7 +43,7 @@ def find_movie():
 def show_movie(movie_id):
     movie = movies.get_movie(movie_id)
     if not movie:
-        return error("Elokuvaa ei löytynyt", "Virhe sivun hakemisessa")
+        return error.page("Elokuvaa ei löytynyt", "Virhe sivun hakemisessa")
     return render_template("show_movie.html", movie=movie)
 
 @app.route("/new_movie")
@@ -59,27 +57,27 @@ def create_movie():
 
     title = request.form["title"]
     if not title or len(title) > 50 or not title.strip():
-        return error("Virheellinen elokuvan nimi", "Virhe elokuvan lisäämisessä")
+        return error.page("Virheellinen elokuvan nimi", "Virhe elokuvan lisäämisessä")
 
     director = request.form["director"]
     if not director or len(director) > 50 or not director.strip():
-        return error("Virheellinen ohjaajan nimi", "Virhe elokuvan lisäämisessä")
+        return error.page("Virheellinen ohjaajan nimi", "Virhe elokuvan lisäämisessä")
 
     year = request.form["year"]
     if not re.search(r"^(19[0-9]{2}|20[0-9]{2})$", year):
-        return error("Virheellinen julkaisuvuosi", "Virhe elokuvan lisäämisessä")
+        return error.page("Virheellinen julkaisuvuosi", "Virhe elokuvan lisäämisessä")
 
     description = request.form["description"]
     if not description or len(description) > 1000 or not description.strip():
-        return error("Virheellinen kuvaus", "Virhe elokuvan lisäämisessä")
+        return error.page("Virheellinen kuvaus", "Virhe elokuvan lisäämisessä")
 
     genre = ",".join(request.form.getlist("genre"))
     if not genre:
-        return error("Virhe genren valinnassa", "Virhe elokuvan lisäämisessä")
+        return error.page("Virhe genren valinnassa", "Virhe elokuvan lisäämisessä")
 
     user_id = session.get("user_id")
     if not user_id:
-        return error("Käyttäjä ei ole kirjautunut", "Virhe elokuvan lisäämisessä")
+        return error.page("Käyttäjä ei ole kirjautunut", "Virhe elokuvan lisäämisessä")
 
     movies.add_movie(title, director, year, description, genre, user_id)
 
@@ -91,10 +89,10 @@ def edit_movie(movie_id):
     movie = movies.get_movie(movie_id)
 
     if not movie:
-        return error("Elokuvaa ei löytynyt", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Elokuvaa ei löytynyt", "Virhe muokatessa elokuvan tietoja")
 
     if movie["user_id"] != session["user_id"]:
-        return error("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", 
+        return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", 
                      "Virhe muokatessa elokuvan tietoja")
 
     if not session.get("username"):
@@ -105,27 +103,27 @@ def edit_movie(movie_id):
 
             title = request.form["title"].strip()
             if not title or len(title) > 50:
-                return error("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
+                return error.page("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
 
             director = request.form["director"].strip()
             if not director or len(director) > 50:
-                return error("Virheellinen ohjaajan nimi", "Virhe muokatessa elokuvan tietoja")
+                return error.page("Virheellinen ohjaajan nimi", "Virhe muokatessa elokuvan tietoja")
 
             year = request.form["year"]
             if not re.search(r"^(19[0-9]{2}|20[0-9]{2})$", year):
-                return error("Virheellinen julkaisuvuosi", "Virhe muokatessa elokuvan tietoja")
+                return error.page("Virheellinen julkaisuvuosi", "Virhe muokatessa elokuvan tietoja")
 
             description = request.form["description"].strip()
             if not description or len(description) > 1000:
-                return error("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
+                return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
 
             genre = ",".join(request.form.getlist("genre"))
             if not genre:
-                return error("Virhe genren valinnassa", "Virhe muokatessa elokuvan tietoja")
+                return error.page("Virhe genren valinnassa", "Virhe muokatessa elokuvan tietoja")
 
             user_id = session.get("user_id")
             if not user_id:
-                return error("Käyttäjä ei ole kirjautunut", "Virhe muokatessa elokuvan tietoja")
+                return error.page("Käyttäjä ei ole kirjautunut", "Virhe muokatessa elokuvan tietoja")
 
             movies.update_movie(title, director, year, description, genre, user_id)
             return redirect("/movie/" + str(movie_id))
@@ -139,29 +137,29 @@ def update_movie():
     movie = movies.get_movie(movie_id)
 
     if not movie:
-        return error("Elokuvaa ei löytynyt", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Elokuvaa ei löytynyt", "Virhe muokatessa elokuvan tietoja")
 
     if movie["user_id"] != session["user_id"]:
-        return error("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", "Virhe muokatessa elokuvan tietoja")
 
     if not session.get("username"):
         return redirect("/login")
 
     title = request.form["title"].strip()
     if not title or len(title) > 50:
-        return error("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
     director = request.form["director"].strip()
     if not director or len(director) > 50:
-        return error("Virheellinen ohjaajan nimi", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Virheellinen ohjaajan nimi", "Virhe muokatessa elokuvan tietoja")
     year = request.form["year"]
     if not re.search(r"^(19[0-9]{2}|20[0-9]{2})$", year):
-        return error("Virheellinen julkaisuvuosi", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Virheellinen julkaisuvuosi", "Virhe muokatessa elokuvan tietoja")
     description = request.form["description"].strip()
     if not description or len(description) > 1000:
-        return error("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
     genre = ",".join(request.form.getlist("genre"))
     if not genre:
-        return error("Virhe genren valinnassa", "Virhe muokatessa elokuvan tietoja")
+        return error.page("Virhe genren valinnassa", "Virhe muokatessa elokuvan tietoja")
 
     movies.update_movie(movie_id, title, director, year, description, genre)
 
@@ -192,27 +190,24 @@ def register():
         username = request.form["username"]
         password1 = request.form["password1"]
         password2 = request.form["password2"]
-        password_hash = generate_password_hash(password1)
-
+        
         if not username or not password1 or not password2:
-            return error("Kaikki kentät tulee täyttää", "Virhe käyttäjän luomisessa")
+            return error.page("Kaikki kentät tulee täyttää", "Virhe käyttäjän luomisessa")
         if password1 != password2:
-            return error("Salasanat eivät täsmää", "Virhe käyttäjän luomisessa")
+            return error.page("Salasanat eivät täsmää", "Virhe käyttäjän luomisessa")
         if len(username) < 3:
-            return error("Käyttäjänimen tulee olla vähintään 3 merkkiä pitkä", 
+            return error.page("Käyttäjänimen tulee olla vähintään 3 merkkiä pitkä", 
                          "Virhe käyttäjän luomisessa")
         if len(password1) < 5:
-            return error("Salasanan tulee olla vähintään 5 merkkiä pitkä", 
-                         "Virhe käyttäjän luomisessa")
-
+            return error.page("Salasanan tulee olla vähintään 5 merkkiä pitkä", "Virhe käyttäjän luomisessa")
+        
         try:
-            sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-            db.execute(sql, [username, password_hash])
+            users.create_user(username, password1)
         except sqlite3.IntegrityError:
-            return error("Käyttäjänimi varattu", "Virhe käyttäjän luomisessa")
+            return error.page("Käyttäjänimi varattu", "Virhe käyttäjän luomisessa")
         return render_template("account_created.html")
-    return render_template("register.html")
 
+    return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -223,22 +218,14 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         if not username or not password:
-            return error("Kaikki kentät tulee täyttää", "Virhe kirjautumisessa")
+            return error.page("Kaikki kentät tulee täyttää", "Virhe kirjautumisessa")
 
-        sql = "SELECT id, password_hash FROM users WHERE username = ?"
-        result = db.query(sql, [username])
-        if not result:
-            return error("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
-
-        result = result[0]
-        user_id = result["id"]
-        password_hash = result["password_hash"]
-
-        if check_password_hash(password_hash, password):
+        user_id = users.check_login(username, password)
+        if user_id:
             session["user_id"] = user_id
             session["username"] = username
             return redirect("/")
-        return error("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
+        return error.page("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
     return render_template("login.html")
 
 @app.route("/logout")
