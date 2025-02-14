@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Elokuvan poisto</title>
-</head>
+{% block title %}Elokuvan poisto{% endblock %}
 
-<body>
+{% block content %}
+
   <h1>Elokuvan poisto</h1>
   <p>Elokuva: {{ movie.title }}</p>
   <p>Haluatko varmasti poistaa tämän elokuvan?</p>
@@ -13,6 +11,5 @@
     <input type="submit" name="remove" value="Poista elokuva">
     <input type="submit" name="back" value="Palaa takaisin">
   </form>
-</body>
 
-</html>
+{% endblock %}

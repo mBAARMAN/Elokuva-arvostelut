@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Rekisteröinti</title>
-</head>
+{% block title %}Rekisteröinti{% endblock %}
 
-<body>
+{% block content %}
+
+  <h2>Rekisteröinti</h2>
   <p>
     Käyttäjätunnuksen tulee olla vähintään 3 merkkiä pitkä ja salasanan vähintään 5 merkkiä pitkä.
   </p>
@@ -24,6 +23,5 @@
     </p>
     <input type="submit" value="Luo tunnus" />
   </form>
-</body>
 
-</html>
+{% endblock %}

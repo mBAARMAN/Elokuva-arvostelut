@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Lisää elokuva</title>
+{% block title %}Lisää elokuva{% endblock %}
+
+{% block extra_head %}
   <script>
     function validateForm() {
       var checkboxes = document.getElementsByName("genre");
@@ -20,9 +20,9 @@
       return true; // lähettää lomakkeen
     }
   </script>
-</head>
+{% endblock %}
 
-<body>
+{% block content %}
   <h1>Lisää elokuva</h1>
   <form action="/create_movie" method="post" onsubmit="return validateForm()">
     <p>
@@ -58,6 +58,4 @@
     </p>
     <input type="submit" value="Lisää elokuva" />
   </form>
-</body>
-
-</html>
+{% endblock %}

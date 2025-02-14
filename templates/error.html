@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>{{ type }}</title>
-</head>
+{% block title %}{{ type }}{% endblock %}
 
-<body>
+{% block content %}
   <h2>{{ type }}</h2>
   <p>
     {{ message }}
@@ -14,6 +11,4 @@
   <p>
     <button onclick="history.back()">Takaisin</button>
   </p>
-</body>
-
-</html>
+{% endblock %}

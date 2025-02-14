@@ -57,7 +57,7 @@ def create_movie():
         return error("Virheellinen ohjaajan nimi", "Virhe elokuvan lisäämisessä")
 
     year = request.form["year"]
-    if not re.search(r"^(19[0-9]{2}|20[01][0-9])$", year):
+    if not re.search(r"^(19[0-9]{2}|20[0-9]{2})$", year):
         return error("Virheellinen julkaisuvuosi", "Virhe elokuvan lisäämisessä")
 
     description = request.form["description"]

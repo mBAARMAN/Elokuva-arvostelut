@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Kirjautuminen</title>
-</head>
+{% block title %}Kirjautuminen{% endblock %}
 
-<body>
+{% block content %}
+
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}
@@ -25,10 +23,6 @@
     </p>
     <input type="submit" value="Kirjaudu" />
   </form>
-  <p>
-    <a href="/">Etusivu</a>
-  </p>
   {% endif %}
-</body>
 
-</html>
+  {% endblock %}

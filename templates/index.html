@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Elokuva-arviot</title>
-</head>
+{% block title %}Etusivu{% endblock %}
 
-<body>
-  <h1>Elokuva-arviot</h1>
+{% block content %}
+  <h2>Tervetuloa Cinemankey-sivustolle!</h2>
 
   {% if session.username %}
   <p>
@@ -38,6 +35,4 @@
     <li><a href="/movie/{{ movie.id }}">{{ movie.title }}</a></li>
     {% endfor %}
   </ul>
-</body>
-
-</html>
+{% endblock %}

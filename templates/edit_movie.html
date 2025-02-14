@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Elokuvan tietojen muokkaus</title>
+{% block title %}Elokuvan tietojen muokkaus{% endblock %}
+
+{% block extra_head %}
   <script>
     function validateForm() {
       var checkboxes = document.getElementsByName("genre");
@@ -20,8 +20,9 @@
       return true; // lähettää lomakkeen
     }
   </script>
-</head>
+{% endblock %}
 
+{% block content %}
 <body>
   <h1>Elokuvan tietojen muokkaus</h1>
   <form action="/update_movie" method="post" onsubmit="return validateForm()">
@@ -59,6 +60,4 @@
     <input type="hidden" name="movie_id" value="{{ movie.id }}" />
     <input type="submit" value="Päivitä elokuvan tiedot" />
   </form>
-</body>
-
-</html>
+{% endblock %}

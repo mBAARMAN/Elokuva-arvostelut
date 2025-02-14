@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Hae elokuvaa</title>
-</head>
+{% block title %}Hae elokuvaa{% endblock %}
 
-<body>
+{% block content %}
+
   <h1>Hae elokuvaa</h1>
 
   <form action="/find_movie" method="get">
@@ -29,6 +27,5 @@
     {% endfor %}
   </ul>
   {% endif %}
-</body>
 
-</html>
+{% endblock %}

@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-  <title>Käyttäjätunnus luotu</title>
-</head>
+{% block title %}Käyttäjätunnus luotu{% endblock %}
 
-<body>
+{% block content %}
+
   <p>
     Käyttäjätunnus luotu!
   </p>
 
   <p>
     <a href="/login">Kirjaudu sisään</a> <br />
-    <a href="/">Etusivu</a>
+    <a href="/">Palaa etusivulle</a>
   </p>
-</body>
 
-</html>
+{% endblock %}
