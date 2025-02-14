@@ -7,7 +7,7 @@
 
   {% if session.username %}
   <p>
-    Olet kirjautunut nimellä {{ session.username }}#{{ session.user_id }}
+    Olet kirjautunut nimellä <a href="/user/{{ session.user_id }}">{{ session.username }}</a>
   </p>
   <p>
     <a href="/logout">Kirjaudu ulos</a>
@@ -28,11 +28,11 @@
   <p>
     <a href="/find_movie">Hae elokuvaa</a>
   </p>
-
+  <hr>
   <h2>Elokuvat</h2>
-  <ul>
-    {% for movie in movies %}
-    <li><a href="/movie/{{ movie.id }}">{{ movie.title }}</a></li>
-    {% endfor %}
-  </ul>
+  {% for movie in movies %}
+  <li><a href="/movie/{{ movie.id }}">{{ movie.title }}</a></li>
+  <p>Tähän tulee arvostelujen keskiarvo</p>
+  <hr>
+  {% endfor %}
 {% endblock %}

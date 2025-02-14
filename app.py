@@ -13,15 +13,18 @@ import error
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+# Login tarkistus
 def require_login():
     if "user_id" not in session:
         abort(403)
 
+# Etusivu
 @app.route("/")
 def index():
     all_movies = movies.get_movies()
     return render_template("index.html", movies=all_movies)
 
+# Käyttäjäsivut
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
     user = users.get_user(user_id)
@@ -30,6 +33,7 @@ def show_user(user_id):
     reviews_list = reviews.get_reviews_by_user(user_id)
     return render_template("show_user.html", user=user, reviews=reviews_list)
 
+# Haku
 @app.route("/find_movie")
 def find_movie():
     query = request.args.get("query")
@@ -40,6 +44,7 @@ def find_movie():
         results = []
     return render_template("find_movie.html",query=query, results=results)
 
+# Elokuvasivut
 @app.route("/movie/<int:movie_id>")
 def show_movie(movie_id):
     movie = movies.get_movie(movie_id)
@@ -48,11 +53,13 @@ def show_movie(movie_id):
     reviews_list = reviews.get_reviews(movie_id)
     return render_template("show_movie.html", movie=movie, reviews=reviews_list)
 
+# Uuden elokuvan lomake
 @app.route("/new_movie")
 def new_movie():
     require_login()
     return render_template("new_movie.html")
 
+# Uuden elokuvan lisääminen
 @app.route("/create_movie", methods=["GET", "POST"])
 def create_movie():
     require_login()
@@ -89,6 +96,7 @@ def create_movie():
 
     return redirect("/")
 
+# Elokuvan arvostelu
 @app.route("/create_review", methods=["POST"])
 def create_review():
     require_login()
@@ -117,6 +125,7 @@ def create_review():
 
     return redirect("/movie/" + str(movie_id))
 
+# Arvostelut
 @app.route("/review/<int:review_id>")
 def show_review(review_id):
     review = reviews.get_review(review_id)
@@ -124,6 +133,7 @@ def show_review(review_id):
         return error.page("Arvostelua ei löytynyt", "Virhe sivun hakemisessa")
     return render_template("show_review.html", review=review)
 
+# Elokuvan tietojen muokkaus
 @app.route("/edit_movie/<int:movie_id>", methods=["GET", "POST"])
 def edit_movie(movie_id):
     require_login()
@@ -175,6 +185,7 @@ def edit_movie(movie_id):
         return redirect("/movie/" + str(movie_id))
     return render_template("edit_movie.html", movie=movie)
 
+# Tietojen päivitys
 @app.route("/update_movie", methods=["POST"])
 def update_movie():
     require_login()
@@ -218,6 +229,7 @@ def update_movie():
 
     return redirect("/movie/" + str(movie_id))
 
+# Elokuvan poisto
 @app.route("/remove_movie/<int:movie_id>", methods=["GET", "POST"])
 def remove_movie(movie_id):
     require_login()
@@ -237,6 +249,7 @@ def remove_movie(movie_id):
         else:
             return redirect("/movie/" + str(movie_id))
 
+# Rekisteröinti
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -262,6 +275,7 @@ def register():
 
     return render_template("register.html")
 
+# Kirjaudu sisään
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """    if request.method == "GET":
@@ -281,6 +295,7 @@ def login():
         return error.page("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
     return render_template("login.html")
 
+# Kirjaudu ulos
 @app.route("/logout")
 def logout():
     if "user_id" in session:
