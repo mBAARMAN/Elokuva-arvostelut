@@ -58,6 +58,7 @@
       <input type="checkbox" name="genre" value="western" {% if "western" in movie.genre %}checked{% endif %}/> western
     </p>
     <input type="hidden" name="movie_id" value="{{ movie.id }}" />
-    <input type="submit" value="Päivitä elokuvan tiedot" />
+    <input type="submit" name="confirm" value="Päivitä elokuvan tiedot" />
+    <input type="submit" value="Peruuta" />
   </form>
 {% endblock %}
