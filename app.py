@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import config
 import db
 import movies
+import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -22,6 +23,14 @@ def index():
     all_movies = movies.get_movies()
     return render_template("index.html", movies=all_movies)
 
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        return error("Käyttäjää ei löytynyt", "Virhe sivun hakemisessa")
+    reviews = users.get_reviews(user_id)
+    return render_template("show_user.html", user=user)
+
 @app.route("/find_movie")
 def find_movie():
     query = request.args.get("query")
@@ -36,7 +45,7 @@ def find_movie():
 def show_movie(movie_id):
     movie = movies.get_movie(movie_id)
     if not movie:
-        abort(404)
+        return error("Elokuvaa ei löytynyt", "Virhe sivun hakemisessa")
     return render_template("show_movie.html", movie=movie)
 
 @app.route("/new_movie")

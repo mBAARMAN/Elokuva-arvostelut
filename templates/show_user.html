@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+  <h1>Käyttäjä {{ user.username }}</h1>
+  <p>
+    <p>
+      Käyttäjällä on yhteensä {{ reviews | count }} arvostelua
+    </p>
+    <h2>Arvostelut</h2>
+    <ul>
+        {% for review in reviews %}
+        <li><a href="/review/{{ review.id }}"></a></li>
+        {% endfor %}
+    </ul>
+    <a href="/">Takaisin</a>
+  </p>
+{% endblock %}
