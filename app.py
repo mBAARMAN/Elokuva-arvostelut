@@ -49,22 +49,28 @@ def create_movie():
     require_login()
 
     title = request.form["title"]
-    if not title or len(title) > 50:
-        abort(403)
+    if not title or len(title) > 50 or not title.strip():
+        return error("Virheellinen elokuvan nimi", "Virhe elokuvan lisäämisessä")
+
     director = request.form["director"]
-    if not director or len(director) > 50:
-        abort(403)
+    if not director or len(director) > 50 or not director.strip():
+        return error("Virheellinen ohjaajan nimi", "Virhe elokuvan lisäämisessä")
+
     year = request.form["year"]
-    if not re.search("^[1-9][0-9]{0,3}$", year):
-        abort(403)
+    if not re.search(r"^(19[0-9]{2}|20[01][0-9])$", year):
+        return error("Virheellinen julkaisuvuosi", "Virhe elokuvan lisäämisessä")
+
     description = request.form["description"]
-    if not description or len(description) > 1000:
-        abort(403)
+    if not description or len(description) > 1000 or not description.strip():
+        return error("Virheellinen kuvaus", "Virhe elokuvan lisäämisessä")
+
     genre = ",".join(request.form.getlist("genre"))
     if not genre:
-        abort(403)
+        return error("Virhe genren valinnassa", "Virhe elokuvan lisäämisessä")
 
-    user_id = session["user_id"]
+    user_id = session.get("user_id")
+    if not user_id:
+        return error("Käyttäjä ei ole kirjautunut", "Virhe elokuvan lisäämisessä")
 
     movies.add_movie(title, director, year, description, genre, user_id)
 
