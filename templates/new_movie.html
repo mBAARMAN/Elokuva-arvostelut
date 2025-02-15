@@ -2,26 +2,6 @@
 
 {% block title %}Lisää elokuva{% endblock %}
 
-{% block extra_head %}
-  <script>
-    function validateForm() {
-      var checkboxes = document.getElementsByName("genre");
-      var isChecked = false;
-      for (var i = 0; i < checkboxes.length; i++) {
-        if (checkboxes[i].checked) {
-          isChecked = true;
-          break;
-        }
-      }
-      if (!isChecked) {
-        alert("Valitse vähintään yksi genre.");
-        return false; // estää lomakkeen lähettämisen
-      }
-      return true; // lähettää lomakkeen
-    }
-  </script>
-{% endblock %}
-
 {% block content %}
   <h1>Lisää elokuva</h1>
   <form action="/create_movie" method="post" onsubmit="return validateForm()">
@@ -41,20 +21,21 @@
       Elokuvan kuvaus: <br />
       <textarea name="description" rows="8" cols="60" maxlength="1000" required></textarea>
     </p>
-    <p>Elokuvan genret:</p>
     <p>
-      <input type="checkbox" name="genre" value="draama" /> draama
-      <input type="checkbox" name="genre" value="komedia" /> komedia
-      <input type="checkbox" name="genre" value="dokumentti" /> dokumentti
-      <input type="checkbox" name="genre" value="musikaali" /> musikaali
-      <input type="checkbox" name="genre" value="toiminta" /> toiminta
-    </p>
-    <p>
-      <input type="checkbox" name="genre" value="seikkailu" /> seikkailu
-      <input type="checkbox" name="genre" value="rakkaus" /> rakkaus
-      <input type="checkbox" name="genre" value="kauhu" /> kauhu
-      <input type="checkbox" name="genre" value="scifi" /> scifi
-      <input type="checkbox" name="genre" value="western" /> western
+      Genre: <br />
+      <select name="genre">
+        <option value="">{valitse}</option>
+        <option value="draama">draama</option>
+        <option value="komedia">komedia</option>
+        <option value="dokumentti">dokumentti</option>
+        <option value="musikaali">musikaali</option>
+        <option value="toiminta">seikkailu</option>
+        <option value="seikkailu">seikkailu</option>
+        <option value="rakkaus">rakkaus</option>
+        <option value="kauhu">kauhu</option>
+        <option value="scifi">scifi</option>
+        <option value="western">western</option>
+      </select>
     </p>
     <input type="submit" value="Lisää elokuva" />
   </form>

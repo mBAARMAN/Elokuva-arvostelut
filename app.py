@@ -52,7 +52,8 @@ def show_movie(movie_id):
     if not movie:
         return error.page("Elokuvaa ei löytynyt", "Virhe sivun hakemisessa")
     reviews_list = reviews.get_reviews(movie_id)
-    return render_template("show_movie.html", movie=movie, reviews=reviews_list)
+    classes = movies.get_classes(movie_id)
+    return render_template("show_movie.html", movie=movie, reviews=reviews_list, classes=classes)
 
 # Arvostelut
 @app.route("/review/<int:review_id>")
@@ -102,19 +103,16 @@ def create_movie():
     if not description or len(description) > 1000 or not description.strip():
         return error.page("Virheellinen kuvaus", "Virhe elokuvan lisäämisessä")
 
-    allowed_genres = {"draama", "komedia", "dokumentti", "musikaali", "toiminta", 
-                      "seikkailu", "rakkaus", "kauhu", "scifi", "western"}
-
-    genre = request.form.getlist("genre")
-    if not genre or not set(genre).issubset(allowed_genres):
-        return error.page("Virhe genren valinnassa", "Virhe elokuvan lisäämisessä")
-    genre = ",".join(genre)
-
     user_id = session.get("user_id")
     if not user_id:
         return error.page("Käyttäjä ei ole kirjautunut", "Virhe elokuvan lisäämisessä")
 
-    movies.add_movie(title, director, year, description, genre, user_id)
+    classes = []
+    genre = request.form["genre"]
+    if genre:
+        classes.append(("Genre", genre))
+
+    movies.add_movie(title, director, year, description, user_id, classes)
 
     return redirect("/")
 
@@ -199,19 +197,11 @@ def edit_movie(movie_id):
             if not description or len(description) > 1000:
                 return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
 
-            allowed_genres = {"draama", "komedia", "dokumentti", "musikaali", "toiminta", 
-                      "seikkailu", "rakkaus", "kauhu", "scifi", "western"}
-
-            genre = request.form.getlist("genre")
-            if not genre or not set(genre).issubset(allowed_genres):
-                return error.page("Virhe genren valinnassa", "Virhe muokatessa elokuvan tietoja")
-            genre = ",".join(genre)
-
             user_id = session.get("user_id")
             if not user_id:
                 return error.page("Käyttäjä ei ole kirjautunut", "Virhe muokatessa elokuvan tietoja")
 
-            movies.update_movie(title, director, year, description, genre, user_id)
+            movies.update_movie(title, director, year, description, user_id)
             return redirect("/movie/" + str(movie_id))
         return redirect("/movie/" + str(movie_id))
     return render_template("edit_movie.html", movie=movie)
@@ -245,15 +235,7 @@ def update_movie():
     if not description or len(description) > 1000:
         return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
 
-    allowed_genres = {"draama", "komedia", "dokumentti", "musikaali", "toiminta", 
-              "seikkailu", "rakkaus", "kauhu", "scifi", "western"}
-
-    genre = request.form.getlist("genre")
-    if not genre or not set(genre).issubset(allowed_genres):
-        return error.page("Virhe genren valinnassa", "Virhe muokatessa elokuvan tietoja")
-    genre = ",".join(genre)
-
-    movies.update_movie(movie_id, title, director, year, description, genre)
+    movies.update_movie(movie_id, title, director, year, description)
 
     return redirect("/movie/" + str(movie_id))
 

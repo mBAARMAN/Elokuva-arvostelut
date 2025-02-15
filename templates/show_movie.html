@@ -13,10 +13,13 @@
   <p>
     {{ movie.year }} - {{ movie.director }}
   </p>
+  {% if classes %}
   <p>
-    ({% set genre_list = movie.genre.split(',') %}
-    {{ genre_list | join(', ') }} )
+    {% for class in classes %}
+    <li>{{ class.title }}: {{ class.value }}</li>
+    {% endfor %}
   </p>
+  {% endif %}
   <p>
     {{ movie.description }}
   </p>

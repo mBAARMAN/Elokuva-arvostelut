@@ -10,8 +10,14 @@ CREATE TABLE movies (
     director TEXT,
     year INTEGER,
     description TEXT,
-    genre TEXT,
     user_id INTEGER REFERENCES users
+);
+
+CREATE TABLE movie_classes (
+    id INTEGER PRIMARY KEY,
+    movie_id INTEGER REFERENCES movies ON DELETE CASCADE,
+    title TEXT,
+    value TEXT
 );
 
 CREATE TABLE ratings (
@@ -22,8 +28,8 @@ CREATE TABLE ratings (
 
 CREATE TABLE reviews (
     id INTEGER PRIMARY KEY,
-    movie_id INTEGER REFERENCES movies,
-    user_id INTEGER REFERENCES users,
+    movie_id INTEGER REFERENCES movies ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users ON DELETE CASCADE,
     rating_id INTEGER REFERENCES ratings(id),
     review TEXT,
     created_at TIMESTAMP DEFAULT (DATETIME('now', '+2 hours'))
@@ -31,8 +37,8 @@ CREATE TABLE reviews (
 
 CREATE TABLE comments (
     id INTEGER PRIMARY KEY,
-    review_id INTEGER REFERENCES reviews,
-    user_id INTEGER REFERENCES users,
+    review_id INTEGER REFERENCES reviews ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users ON DELETE CASCADE,
     comment TEXT,
     created_at TIMESTAMP DEFAULT (DATETIME('now', '+2 hours'))
 );
