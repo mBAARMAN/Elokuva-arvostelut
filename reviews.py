@@ -1,17 +1,5 @@
 import db
 
-def get_all_ratings():
-    sql = "SELECT title, value FROM rating ORDER BY id"
-    result = db.query(sql)
-
-    ratings = {}
-    for title, value in result:
-        ratings[title] = []
-    for title, value in result:
-        ratings[title].append(value)
-
-    return ratings
-
 def add_review(movie_id, user_id, rating_id, review):
     sql = """INSERT INTO reviews (movie_id, user_id, rating_id, review) 
     VALUES (?, ?, ?, ?)"""

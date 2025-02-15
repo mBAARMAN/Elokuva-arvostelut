@@ -8,6 +8,7 @@ import db
 import movies
 import users
 import reviews
+import comments
 import error
 
 app = Flask(__name__)
@@ -124,13 +125,35 @@ def create_review():
     reviews.add_review(movie_id, user_id, rating_id, review)
     return redirect("/movie/" + str(movie_id))
 
+@app.route("/create_comment", methods=["POST"])
+def create_comment():
+    require_login()
+
+    comment = request.form["comment"]
+    review_id = request.form["review_id"]
+
+    if not review_id:
+        return error.page("Arvostelua ei löytynyt", "Virhe kommentin lisäämisessä")
+
+    review = reviews.get_review(review_id)
+    if not review:
+        return error.page("Arvostelua ei löytynyt", "Virhe kommentin lisäämisessä")
+    
+    user_id = session.get("user_id")
+    if not user_id:
+        return error.page("Käyttäjä ei ole kirjautunut", "Virhe kommentin lisäämisessä")
+
+    comments.add_comment(review_id, user_id, comment)
+    return redirect("/review/" + str(review_id))
+
 # Arvostelut
 @app.route("/review/<int:review_id>")
 def show_review(review_id):
     review = reviews.get_review(review_id)
     if not review:
         return error.page("Arvostelua ei löytynyt", "Virhe sivun hakemisessa")
-    return render_template("show_review.html", review=review)
+    comments_list = comments.get_comments(review_id)
+    return render_template("show_review.html", review=review, comments=comments_list)
 
 # Elokuvan tietojen muokkaus
 @app.route("/edit_movie/<int:movie_id>", methods=["GET", "POST"])
@@ -230,11 +253,11 @@ def edit_review(review_id):
 
     if not review:
         return error.page("Arvostelua ei löytynyt", "Virhe muokatessa arvostelua")
-    
+
     if review["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata arvostelua", 
                      "Virhe muokatessa elokuvan tietoja")
-    
+
     if request.method == "POST":
         if "confirm" in request.form:
 
@@ -289,7 +312,7 @@ def remove_movie(movie_id):
 def remove_review(review_id):
     require_login()
     review = reviews.get_review(review_id)
-    
+
     if not review:
         return error.page("Arvostelua ei löytynyt", "Virhe arvostelun poistossa")
     if review["user_id"] != session["user_id"]:

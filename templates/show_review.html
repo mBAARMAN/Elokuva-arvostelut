@@ -18,6 +18,24 @@
   </p>
   <p>{{ review.review }}</p>
   <hr>
+  <h3>Kommentit</h3>
+  {% for comment in comments %}
+    <li>
+      <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a> {{ comment.time }}
+      <p>{{ comment.comment }}</p>
+      <hr>
+    </li>
+  {% endfor %}
+  <h3>Uusi kommentti</h3>
+  <form action="/create_comment" method="post">
+    <p>
+      <textarea name="comment" rows="8" cols="60" maxlength="1000" required></textarea>
+    </p>
+    <p>
+      <input type="hidden" name="review_id" value="{{ review.id }}">
+      <input type="submit" value="Kommentoi" />
+    </p>
+  </form>
   <p>
     <button onclick="history.back()">Takaisin</button>
   </p>

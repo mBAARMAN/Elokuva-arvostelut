@@ -28,3 +28,11 @@ CREATE TABLE reviews (
     review TEXT,
     created_at TIMESTAMP DEFAULT (DATETIME('now', '+2 hours'))
 );
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY,
+    review_id INTEGER REFERENCES reviews,
+    user_id INTEGER REFERENCES users,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT (DATETIME('now', '+2 hours'))
+);
