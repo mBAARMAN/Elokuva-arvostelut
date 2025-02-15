@@ -29,6 +29,8 @@
       <p>{{ review.review }}</p>
       <hr>
     </li>
+  {% else %}
+    Ei arvosteluja.
   {% endfor %}
   <h3>Uusi arvostelu</h3>
   <form action="/create_review" method="post">

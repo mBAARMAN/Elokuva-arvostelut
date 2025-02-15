@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Kommentin poisto{% endblock %}
+
+{% block content %}
+
+  <h1>Kommentin poisto</h1>
+  <p>Haluatko varmasti poistaa tämän kommentin?</p>
+  <form action="/remove_comment/{{ comment.id }}" method="post">
+    <input type="submit" name="remove" value="Poista kommentti">
+    <input type="submit" name="back" value="Peruuta">
+  </form>
+
+{% endblock %}

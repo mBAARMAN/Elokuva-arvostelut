@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Elokuvan tietojen muokkaus{% endblock %}
+{% block title %}Arvostelun muokkaus{% endblock %}
 
 {% block content %}
   <h2>Muokkaa arvostelua</h2>
@@ -14,7 +14,7 @@
     </p>
     <p>
       <input type="hidden" name="movie_id" value="{{ review.movie_id }}">
-      <input type="submit" name="confirm" value="Arvostele" />
+      <input type="submit" name="confirm" value="Muokkaa arvostelua" />
       <input type="submit" value="Peruuta" />
     </p>
   </form>

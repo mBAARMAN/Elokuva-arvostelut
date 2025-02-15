@@ -45,7 +45,7 @@ def find_movie():
         results = []
     return render_template("find_movie.html",query=query, results=results)
 
-# Elokuvasivut
+# Elokuvat
 @app.route("/movie/<int:movie_id>")
 def show_movie(movie_id):
     movie = movies.get_movie(movie_id)
@@ -53,6 +53,27 @@ def show_movie(movie_id):
         return error.page("Elokuvaa ei löytynyt", "Virhe sivun hakemisessa")
     reviews_list = reviews.get_reviews(movie_id)
     return render_template("show_movie.html", movie=movie, reviews=reviews_list)
+
+# Arvostelut
+@app.route("/review/<int:review_id>")
+def show_review(review_id):
+    review = reviews.get_review(review_id)
+    if not review:
+        return error.page("Arvostelua ei löytynyt", "Virhe kommentin näytössä")
+    comments_list = comments.get_comments(review_id)
+    return render_template("show_review.html", review=review, comments=comments_list)
+
+# Kommentit
+@app.route("/comment/<int:comment_id>")
+def show_comment(comment_id):
+    comment = comments.get_comment(comment_id)
+    if not comment:
+        return error.page("Kommenttia ei löytynyt", "Virhe kommentin näytössä")
+
+    review = reviews.get_review(comment["review_id"])
+    if not review:
+        return error.page("Arvostelua ei löytynyt", "Virhe kommentin näytössä")
+    return render_template("show_comment.html", comment=comment, review=review)
 
 # Uuden elokuvan lomake
 @app.route("/new_movie")
@@ -138,22 +159,13 @@ def create_comment():
     review = reviews.get_review(review_id)
     if not review:
         return error.page("Arvostelua ei löytynyt", "Virhe kommentin lisäämisessä")
-    
+
     user_id = session.get("user_id")
     if not user_id:
         return error.page("Käyttäjä ei ole kirjautunut", "Virhe kommentin lisäämisessä")
 
     comments.add_comment(review_id, user_id, comment)
     return redirect("/review/" + str(review_id))
-
-# Arvostelut
-@app.route("/review/<int:review_id>")
-def show_review(review_id):
-    review = reviews.get_review(review_id)
-    if not review:
-        return error.page("Arvostelua ei löytynyt", "Virhe sivun hakemisessa")
-    comments_list = comments.get_comments(review_id)
-    return render_template("show_review.html", review=review, comments=comments_list)
 
 # Elokuvan tietojen muokkaus
 @app.route("/edit_movie/<int:movie_id>", methods=["GET", "POST"])
@@ -256,7 +268,7 @@ def edit_review(review_id):
 
     if review["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata arvostelua", 
-                     "Virhe muokatessa elokuvan tietoja")
+                     "Virhe muokatessa arvostelua")
 
     if request.method == "POST":
         if "confirm" in request.form:
@@ -286,6 +298,42 @@ def edit_review(review_id):
             return redirect("/review/" + str(review_id))
         return redirect("/review/" + str(review_id))
     return render_template("edit_review.html", review=review, movie_id=review["movie_id"])
+
+# Kommentin muokkaus
+@app.route("/edit_comment/<int:comment_id>", methods=["GET", "POST"])
+def edit_comment(comment_id):
+    require_login()
+
+    comment = comments.get_comment(comment_id)
+    if not comment:
+        return error.page("Kommenttia ei löytynyt", "Virhe muokatessa kommenttia")
+
+    if comment["user_id"] != session["user_id"]:
+        return error.page("Käyttäjällä ei ole oikeuksia muokata kommenttia", 
+                     "Virhe muokatessa kommenttia")
+
+    if request.method == "POST":
+        if "confirm" in request.form:
+
+            comment = request.form["comment"].strip()
+            if not comment or len(comment) > 1000:
+                return error.page("Virheellinen kommentti", "Virhe muokatessa kommenttia")
+
+            review_id = request.form["review_id"]
+            if not review_id:
+                return error.page("Arvostelua ei löytynyt", "Virhe muokatessa kommenttia")
+            review = reviews.get_review(review_id)
+            if not review:
+                return error.page("Arvostelua ei löytynyt", "Virhe muokatessa kommenttia")
+
+            user_id = session.get("user_id")
+            if not user_id:
+                return error.page("Käyttäjä ei ole kirjautunut", "Virhe muokatessa kommenttia")
+
+            comments.update_comment(comment_id, comment)
+            return redirect("/comment/" + str(comment_id))
+        return redirect("/comment/" + str(comment_id))
+    return render_template("edit_comment.html", comment=comment, review_id=comment["review_id"])
 
 # Elokuvan poisto
 @app.route("/remove_movie/<int:movie_id>", methods=["GET", "POST"])
@@ -324,9 +372,30 @@ def remove_review(review_id):
     if request.method == "POST":
         if "remove" in request.form:
             reviews.remove_review(review_id)
-            return redirect("/")
+            return redirect("/movie/" + str(review["movie_id"]))
         else:
             return redirect("/review/" + str(review_id))
+
+# Kommentin poisto
+@app.route("/remove_comment/<int:comment_id>", methods=["GET", "POST"])
+def remove_comment(comment_id):
+    require_login()
+    comment = comments.get_comment(comment_id)
+
+    if not comment:
+        return error.page("Kommenttia ei löytynyt", "Virhe kommentin poistossa")
+    if comment["user_id"] != session["user_id"]:
+        return error.page("Käyttäjällä ei oikeuksia poistaa kommenttia", "Virhe kommentin poistossa")
+
+    if request.method == "GET":
+        return render_template("remove_comment.html", comment=comment)
+
+    if request.method == "POST":
+        if "remove" in request.form:
+            comments.remove_comment(comment_id)
+            return redirect("/review/" + str(comment["review_id"]))
+        else:
+            return redirect("/comment/" + str(comment_id))
 
 # Rekisteröinti
 @app.route("/register", methods=["GET", "POST"])

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Kommentin muokkaus{% endblock %}
+
+{% block content %}
+  <h2>Muokkaa kommenttia</h2>
+  <form action="/edit_comment/{{ comment.id }}" method="post">
+    <p>
+      <textarea name="comment" rows="8" cols="60" maxlength="1000" required>{{ comment.comment }}</textarea>
+    </p>
+    <p>
+      <input type="hidden" name="review_id" value="{{ comment.review_id }}">
+      <input type="submit" name="confirm" value="Muokkaa kommenttia" />
+      <input type="submit" value="Peruuta" />
+    </p>
+  </form>
+{% endblock %}

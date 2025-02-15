@@ -3,7 +3,8 @@
 {% block title %}Arvostelu: {{ review.movie_title }}{% endblock %}
 
 {% block content %}
-  <h2>Arvostelu elokuvasta: {{ review.movie_title }}</h2>
+  <h2>Arvostelu elokuvasta: <a href="/movie/{{ review.movie_id }}">
+    {{ review.movie_title }}</a></h2>
   {% if session.user_id == review.user_id %}
   <p>
     <a href="/edit_review/{{ review.id }}">Muokkaa</a>
@@ -20,11 +21,14 @@
   <hr>
   <h3>Kommentit</h3>
   {% for comment in comments %}
-    <li>
-      <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a> {{ comment.time }}
+    <li class="comment-item" onclick="location.href='/comment/{{ comment.id }}'">
+      <a href="/user/{{ comment.user_id }}" onclick="event.stopPropagation();">
+        {{ comment.username }}</a> {{ comment.time }}
       <p>{{ comment.comment }}</p>
       <hr>
     </li>
+  {% else %}
+    Ei kommentteja.
   {% endfor %}
   <h3>Uusi kommentti</h3>
   <form action="/create_comment" method="post">
