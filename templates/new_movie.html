@@ -21,22 +21,18 @@
       Elokuvan kuvaus: <br />
       <textarea name="description" rows="8" cols="60" maxlength="1000" required></textarea>
     </p>
+    {% for class in classes %}
     <p>
-      Genre: <br />
-      <select name="genre">
-        <option value="">{valitse}</option>
-        <option value="draama">draama</option>
-        <option value="komedia">komedia</option>
-        <option value="dokumentti">dokumentti</option>
-        <option value="musikaali">musikaali</option>
-        <option value="toiminta">seikkailu</option>
-        <option value="seikkailu">seikkailu</option>
-        <option value="rakkaus">rakkaus</option>
-        <option value="kauhu">kauhu</option>
-        <option value="scifi">scifi</option>
-        <option value="western">western</option>
+      {{ class }}: <br />
+      <select name="classes">
+        <option value="">(valitse)</option>
+     {% for option in classes[class] %}
+        <option value="{{ class}}:{{ option }}">{{ option }}</option>
+     {{ option }}
+     {% endfor %}
       </select>
     </p>
+    {% endfor %}
     <input type="submit" value="Lisää elokuva" />
   </form>
   <p>

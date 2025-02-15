@@ -80,7 +80,8 @@ def show_comment(comment_id):
 @app.route("/new_movie")
 def new_movie():
     require_login()
-    return render_template("new_movie.html")
+    classes = movies.get_all_classes()
+    return render_template("new_movie.html", classes=classes)
 
 # Uuden elokuvan lisääminen
 @app.route("/create_movie", methods=["GET", "POST"])
@@ -108,9 +109,10 @@ def create_movie():
         return error.page("Käyttäjä ei ole kirjautunut", "Virhe elokuvan lisäämisessä")
 
     classes = []
-    genre = request.form["genre"]
-    if genre:
-        classes.append(("Genre", genre))
+    for entry in request.form.getlist("classes"):
+        if entry:
+            parts = entry.split(":")
+            classes.append((parts[0],parts[1]))
 
     movies.add_movie(title, director, year, description, user_id, classes)
 

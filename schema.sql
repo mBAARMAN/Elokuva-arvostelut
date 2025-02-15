@@ -13,6 +13,12 @@ CREATE TABLE movies (
     user_id INTEGER REFERENCES users
 );
 
+CREATE TABLE classes (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    value TEXT
+);
+
 CREATE TABLE movie_classes (
     id INTEGER PRIMARY KEY,
     movie_id INTEGER REFERENCES movies ON DELETE CASCADE,
