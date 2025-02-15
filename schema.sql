@@ -26,5 +26,5 @@ CREATE TABLE reviews (
     user_id INTEGER REFERENCES users,
     rating_id INTEGER REFERENCES ratings(id),
     review TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT (DATETIME('now', '+2 hours'))
 );

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Arvostelun poisto{% endblock %}
+
+{% block content %}
+
+  <h1>Arvostelun poisto</h1>
+  <p>Haluatko varmasti poistaa tämän arvostelun?</p>
+  <form action="/remove_review/{{ review.id }}" method="post">
+    <input type="submit" name="remove" value="Poista arvostelu">
+    <input type="submit" name="back" value="Peruuta">
+  </form>
+
+{% endblock %}

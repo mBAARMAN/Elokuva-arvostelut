@@ -32,7 +32,6 @@
   <h2>Elokuvat</h2>
   {% for movie in movies %}
   <li><a href="/movie/{{ movie.id }}">{{ movie.title }}</a></li>
-  <p>Tähän tulee arvostelujen keskiarvo</p>
   <hr>
   {% endfor %}
 {% endblock %}

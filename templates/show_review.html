@@ -4,13 +4,20 @@
 
 {% block content %}
   <h2>Arvostelu elokuvasta: {{ review.movie_title }}</h2>
+  {% if session.user_id == review.user_id %}
   <p>
-    Arvostelija: <a href="/user/{{ review.user_id }}">{{review.username }}</a>
+    <a href="/edit_review/{{ review.id }}">Muokkaa</a>
+    <a href="/remove_review/{{ review.id }}">Poista</a>
+  </p>
+  {% endif %}
+  <p>
+    <a href="/user/{{ review.user_id }}">{{ review.username }}</a> {{ review.time }}
   </p>
   <p>
     Arvosana: <strong>{{ "★" * review.rating_value }} </strong>
   </p>
   <p>{{ review.review }}</p>
+  <hr>
   <p>
     <button onclick="history.back()">Takaisin</button>
   </p>

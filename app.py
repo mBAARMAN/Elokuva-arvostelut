@@ -119,10 +119,9 @@ def create_review():
     rating_id = db.query("SELECT id FROM ratings WHERE value = ?", [rating])
     if not rating_id:
         return error.page("Virheellinen arvosana", "Virhe arvostelun lisäämisessä")
-
     rating_id = rating_id[0]["id"]
-    reviews.add_review(movie_id, user_id, rating_id, review)
 
+    reviews.add_review(movie_id, user_id, rating_id, review)
     return redirect("/movie/" + str(movie_id))
 
 # Arvostelut
@@ -145,9 +144,6 @@ def edit_movie(movie_id):
     if movie["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", 
                      "Virhe muokatessa elokuvan tietoja")
-
-    if not session.get("username"):
-        return redirect("/login")
 
     if request.method == "POST":
         if "confirm" in request.form:
@@ -198,9 +194,6 @@ def update_movie():
     if movie["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", "Virhe muokatessa elokuvan tietoja")
 
-    if not session.get("username"):
-        return redirect("/login")
-
     title = request.form["title"].strip()
     if not title or len(title) > 50:
         return error.page("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
@@ -229,15 +222,57 @@ def update_movie():
 
     return redirect("/movie/" + str(movie_id))
 
+# Arvostelun muokkaus
+@app.route("/edit_review/<int:review_id>", methods=["GET", "POST"])
+def edit_review(review_id):
+    require_login()
+    review = reviews.get_review(review_id)
+
+    if not review:
+        return error.page("Arvostelua ei löytynyt", "Virhe muokatessa arvostelua")
+    
+    if review["user_id"] != session["user_id"]:
+        return error.page("Käyttäjällä ei ole oikeuksia muokata arvostelua", 
+                     "Virhe muokatessa elokuvan tietoja")
+    
+    if request.method == "POST":
+        if "confirm" in request.form:
+
+            rating = int(request.form["rating"])
+            review = request.form["review"].strip()
+            if not review or len(review) > 1000:
+                return error.page("Virheellinen arvostelu", "Virhe muokatessa arvostelua")
+
+            movie_id = request.form["movie_id"]
+            if not movie_id:
+                return error.page("Elokuvaa ei löytynyt", "Virhe muokatessa arvostelua")
+            movie = movies.get_movie(movie_id)
+            if not movie:
+                return error.page("Elokuvaa ei löytynyt", "Virhe muokatessa arvostelua")
+
+            user_id = session.get("user_id")
+            if not user_id:
+                return error.page("Käyttäjä ei ole kirjautunut", "Virhe muokatessa arvostelua")
+
+            rating_id = db.query("SELECT id FROM ratings WHERE value = ?", [rating])
+            if not rating_id:
+                return error.page("Virheellinen arvosana", "Virhe muokatessa arvostelua")
+            rating_id = rating_id[0]["id"]
+
+            reviews.update_review(review_id, review, rating_id)
+            return redirect("/review/" + str(review_id))
+        return redirect("/review/" + str(review_id))
+    return render_template("edit_review.html", review=review, movie_id=review["movie_id"])
+
 # Elokuvan poisto
 @app.route("/remove_movie/<int:movie_id>", methods=["GET", "POST"])
 def remove_movie(movie_id):
     require_login()
     movie = movies.get_movie(movie_id)
     if not movie:
-        abort(404)
+        return error.page("Elokuvaa ei löytynyt", "Virhe elokuvan poistossa")
     if movie["user_id"] != session["user_id"]:
-        abort(403)
+        return error.page("Käyttäjällä ei oikeuksia poistaa elokuvaa", "Virhe elokuvan poistossa")
 
     if request.method == "GET":
         return render_template("remove_movie.html", movie=movie)
@@ -248,6 +283,27 @@ def remove_movie(movie_id):
             return redirect("/")
         else:
             return redirect("/movie/" + str(movie_id))
+
+# Arvostelun poisto
+@app.route("/remove_review/<int:review_id>", methods=["GET", "POST"])
+def remove_review(review_id):
+    require_login()
+    review = reviews.get_review(review_id)
+    
+    if not review:
+        return error.page("Arvostelua ei löytynyt", "Virhe arvostelun poistossa")
+    if review["user_id"] != session["user_id"]:
+        return error.page("Käyttäjällä ei oikeuksia poistaa arvostelua", "Virhe arvostelun poistossa")
+
+    if request.method == "GET":
+        return render_template("remove_review.html", review=review)
+
+    if request.method == "POST":
+        if "remove" in request.form:
+            reviews.remove_review(review_id)
+            return redirect("/")
+        else:
+            return redirect("/review/" + str(review_id))
 
 # Rekisteröinti
 @app.route("/register", methods=["GET", "POST"])
