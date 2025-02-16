@@ -108,11 +108,17 @@ def create_movie():
     if not user_id:
         return error.page("Käyttäjä ei ole kirjautunut", "Virhe elokuvan lisäämisessä")
 
+    all_classes = movies.get_all_classes()
+
     classes = []
     for entry in request.form.getlist("classes"):
         if entry:
-            parts = entry.split(":")
-            classes.append((parts[0],parts[1]))
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                return error.page("Virheellinen luokitus", "Virhe elokuvan lisäämisessä")
+            if class_value not in all_classes[class_title]:
+                return error.page("Virheellinen luokitus", "Virhe elokuvan lisäämisessä")
+            classes.append((class_title, class_value))
 
     movies.add_movie(title, director, year, description, user_id, classes)
 
@@ -180,14 +186,14 @@ def edit_movie(movie_id):
     if movie["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", 
                      "Virhe muokatessa elokuvan tietoja")
-    
+
     all_classes = movies.get_all_classes()
     classes = {}
     for my_class in all_classes:
         classes[my_class] = ""
     for entry in movies.get_classes(movie_id):
         classes[entry["title"]] = entry["value"]
-    
+
     return render_template("edit_movie.html", movie=movie, classes=classes, 
                            all_classes=all_classes)
 
@@ -222,11 +228,17 @@ def update_movie():
         if not description or len(description) > 1000:
             return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
 
-        classes = []
-        for entry in request.form.getlist("classes"):
-            if entry:
-                parts = entry.split(":")
-                classes.append((parts[0],parts[1]))
+    all_classes = movies.get_all_classes()
+
+    classes = []
+    for entry in request.form.getlist("classes"):
+        if entry:
+            class_title, class_value = entry.split(":")
+            if class_title not in all_classes:
+                return error.page("Virheellinen luokitus", "Virhe elokuvan lisäämisessä")
+            if class_value not in all_classes[class_title]:
+                return error.page("Virheellinen luokitus", "Virhe elokuvan lisäämisessä")
+            classes.append((class_title, class_value))
 
         movies.update_movie(movie_id, title, director, year, description, classes)
 
