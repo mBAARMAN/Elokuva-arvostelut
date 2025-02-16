@@ -22,6 +22,21 @@
       Elokuvan kuvaus: <br />
       <textarea name="description" rows="8" cols="60" maxlength="1000" required>{{ movie.description }}</textarea>
     </p>
+    {% for class in all_classes %}
+    <p>
+      {{ class }}: <br />
+      <select name="classes">
+        <option value="">(valitse)</option>
+      {% for option in all_classes[class] %}
+        {% if classes[class] == option %}
+        <option value="{{ class}}:{{ option }}" selected>{{ option }}</option>
+        {% else %}
+        <option value="{{ class}}:{{ option }}">{{ option }}</option>
+        {% endif %}
+      {% endfor %}
+      </select>
+    </p>
+    {% endfor %}
     <input type="hidden" name="movie_id" value="{{ movie.id }}" />
     <input type="submit" name="confirm" value="Päivitä elokuvan tiedot" />
     <input type="submit" value="Peruuta" />

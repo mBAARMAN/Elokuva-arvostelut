@@ -14,18 +14,18 @@ import error
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
-# Login tarkistus
+# Check login
 def require_login():
     if "user_id" not in session:
         abort(403)
 
-# Etusivu
+# Front page
 @app.route("/")
 def index():
     all_movies = movies.get_movies()
     return render_template("index.html", movies=all_movies)
 
-# Käyttäjäsivut
+# User pages
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
     user = users.get_user(user_id)
@@ -34,7 +34,7 @@ def show_user(user_id):
     reviews_list = reviews.get_reviews_by_user(user_id)
     return render_template("show_user.html", user=user, reviews=reviews_list)
 
-# Haku
+# Search for a movie
 @app.route("/find_movie")
 def find_movie():
     query = request.args.get("query")
@@ -45,7 +45,7 @@ def find_movie():
         results = []
     return render_template("find_movie.html",query=query, results=results)
 
-# Elokuvat
+# Render a movie page
 @app.route("/movie/<int:movie_id>")
 def show_movie(movie_id):
     movie = movies.get_movie(movie_id)
@@ -55,7 +55,7 @@ def show_movie(movie_id):
     classes = movies.get_classes(movie_id)
     return render_template("show_movie.html", movie=movie, reviews=reviews_list, classes=classes)
 
-# Arvostelut
+# Render a review page
 @app.route("/review/<int:review_id>")
 def show_review(review_id):
     review = reviews.get_review(review_id)
@@ -64,7 +64,7 @@ def show_review(review_id):
     comments_list = comments.get_comments(review_id)
     return render_template("show_review.html", review=review, comments=comments_list)
 
-# Kommentit
+# Render a comment page
 @app.route("/comment/<int:comment_id>")
 def show_comment(comment_id):
     comment = comments.get_comment(comment_id)
@@ -76,14 +76,14 @@ def show_comment(comment_id):
         return error.page("Arvostelua ei löytynyt", "Virhe kommentin näytössä")
     return render_template("show_comment.html", comment=comment, review=review)
 
-# Uuden elokuvan lomake
+# Render new movie form
 @app.route("/new_movie")
 def new_movie():
     require_login()
     classes = movies.get_all_classes()
     return render_template("new_movie.html", classes=classes)
 
-# Uuden elokuvan lisääminen
+# Create movie
 @app.route("/create_movie", methods=["GET", "POST"])
 def create_movie():
     require_login()
@@ -118,7 +118,7 @@ def create_movie():
 
     return redirect("/")
 
-# Elokuvan arvostelu
+# Create review on movie
 @app.route("/create_review", methods=["POST"])
 def create_review():
     require_login()
@@ -146,6 +146,7 @@ def create_review():
     reviews.add_review(movie_id, user_id, rating_id, review)
     return redirect("/movie/" + str(movie_id))
 
+# Create comment on review
 @app.route("/create_comment", methods=["POST"])
 def create_comment():
     require_login()
@@ -167,8 +168,8 @@ def create_comment():
     comments.add_comment(review_id, user_id, comment)
     return redirect("/review/" + str(review_id))
 
-# Elokuvan tietojen muokkaus
-@app.route("/edit_movie/<int:movie_id>", methods=["GET", "POST"])
+# Edit movie data
+@app.route("/edit_movie/<int:movie_id>")
 def edit_movie(movie_id):
     require_login()
     movie = movies.get_movie(movie_id)
@@ -179,36 +180,18 @@ def edit_movie(movie_id):
     if movie["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", 
                      "Virhe muokatessa elokuvan tietoja")
+    
+    all_classes = movies.get_all_classes()
+    classes = {}
+    for my_class in all_classes:
+        classes[my_class] = ""
+    for entry in movies.get_classes(movie_id):
+        classes[entry["title"]] = entry["value"]
+    
+    return render_template("edit_movie.html", movie=movie, classes=classes, 
+                           all_classes=all_classes)
 
-    if request.method == "POST":
-        if "confirm" in request.form:
-
-            title = request.form["title"].strip()
-            if not title or len(title) > 50:
-                return error.page("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
-
-            director = request.form["director"].strip()
-            if not director or len(director) > 50:
-                return error.page("Virheellinen ohjaajan nimi", "Virhe muokatessa elokuvan tietoja")
-
-            year = request.form["year"]
-            if not re.search(r"^(19[0-9]{2}|20[0-9]{2})$", year):
-                return error.page("Virheellinen julkaisuvuosi", "Virhe muokatessa elokuvan tietoja")
-
-            description = request.form["description"].strip()
-            if not description or len(description) > 1000:
-                return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
-
-            user_id = session.get("user_id")
-            if not user_id:
-                return error.page("Käyttäjä ei ole kirjautunut", "Virhe muokatessa elokuvan tietoja")
-
-            movies.update_movie(title, director, year, description, user_id)
-            return redirect("/movie/" + str(movie_id))
-        return redirect("/movie/" + str(movie_id))
-    return render_template("edit_movie.html", movie=movie)
-
-# Tietojen päivitys
+# Update data
 @app.route("/update_movie", methods=["POST"])
 def update_movie():
     require_login()
@@ -221,27 +204,36 @@ def update_movie():
     if movie["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja", "Virhe muokatessa elokuvan tietoja")
 
-    title = request.form["title"].strip()
-    if not title or len(title) > 50:
-        return error.page("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
+    if "confirm" in request.form:
 
-    director = request.form["director"].strip()
-    if not director or len(director) > 50:
-        return error.page("Virheellinen ohjaajan nimi", "Virhe muokatessa elokuvan tietoja")
+        title = request.form["title"].strip()
+        if not title or len(title) > 50:
+            return error.page("Virheellinen elokuvan nimi", "Virhe muokatessa elokuvan tietoja")
 
-    year = request.form["year"]
-    if not re.search(r"^(19[0-9]{2}|20[0-9]{2})$", year):
-        return error.page("Virheellinen julkaisuvuosi", "Virhe muokatessa elokuvan tietoja")
+        director = request.form["director"].strip()
+        if not director or len(director) > 50:
+            return error.page("Virheellinen ohjaajan nimi", "Virhe muokatessa elokuvan tietoja")
 
-    description = request.form["description"].strip()
-    if not description or len(description) > 1000:
-        return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
+        year = request.form["year"]
+        if not re.search(r"^(19[0-9]{2}|20[0-9]{2})$", year):
+            return error.page("Virheellinen julkaisuvuosi", "Virhe muokatessa elokuvan tietoja")
 
-    movies.update_movie(movie_id, title, director, year, description)
+        description = request.form["description"].strip()
+        if not description or len(description) > 1000:
+            return error.page("Virheellinen kuvaus", "Virhe muokatessa elokuvan tietoja")
 
+        classes = []
+        for entry in request.form.getlist("classes"):
+            if entry:
+                parts = entry.split(":")
+                classes.append((parts[0],parts[1]))
+
+        movies.update_movie(movie_id, title, director, year, description, classes)
+
+        return redirect("/movie/" + str(movie_id))
     return redirect("/movie/" + str(movie_id))
 
-# Arvostelun muokkaus
+# Edit review data
 @app.route("/edit_review/<int:review_id>", methods=["GET", "POST"])
 def edit_review(review_id):
     require_login()
@@ -283,7 +275,7 @@ def edit_review(review_id):
         return redirect("/review/" + str(review_id))
     return render_template("edit_review.html", review=review, movie_id=review["movie_id"])
 
-# Kommentin muokkaus
+# Edit comment data
 @app.route("/edit_comment/<int:comment_id>", methods=["GET", "POST"])
 def edit_comment(comment_id):
     require_login()
@@ -319,7 +311,7 @@ def edit_comment(comment_id):
         return redirect("/comment/" + str(comment_id))
     return render_template("edit_comment.html", comment=comment, review_id=comment["review_id"])
 
-# Elokuvan poisto
+# Remove movie
 @app.route("/remove_movie/<int:movie_id>", methods=["GET", "POST"])
 def remove_movie(movie_id):
     require_login()
@@ -339,7 +331,7 @@ def remove_movie(movie_id):
         else:
             return redirect("/movie/" + str(movie_id))
 
-# Arvostelun poisto
+# Remove review
 @app.route("/remove_review/<int:review_id>", methods=["GET", "POST"])
 def remove_review(review_id):
     require_login()
@@ -360,7 +352,7 @@ def remove_review(review_id):
         else:
             return redirect("/review/" + str(review_id))
 
-# Kommentin poisto
+# Remove comment
 @app.route("/remove_comment/<int:comment_id>", methods=["GET", "POST"])
 def remove_comment(comment_id):
     require_login()
@@ -381,7 +373,7 @@ def remove_comment(comment_id):
         else:
             return redirect("/comment/" + str(comment_id))
 
-# Rekisteröinti
+# Register form
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -407,7 +399,7 @@ def register():
 
     return render_template("register.html")
 
-# Kirjaudu sisään
+# Login
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """    if request.method == "GET":
@@ -427,7 +419,7 @@ def login():
         return error.page("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
     return render_template("login.html")
 
-# Kirjaudu ulos
+# Logout
 @app.route("/logout")
 def logout():
     if "user_id" in session:
