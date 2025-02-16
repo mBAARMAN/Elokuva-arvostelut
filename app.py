@@ -144,7 +144,7 @@ def create_review():
     if not user_id:
         return error.page("Käyttäjä ei ole kirjautunut", "Virhe arvostelun lisäämisessä")
 
-    rating_id = db.query("SELECT id FROM ratings WHERE value = ?", [rating])
+    rating_id = reviews.get_rating(rating)
     if not rating_id:
         return error.page("Virheellinen arvosana", "Virhe arvostelun lisäämisessä")
     rating_id = rating_id[0]["id"]
@@ -277,7 +277,7 @@ def edit_review(review_id):
             if not user_id:
                 return error.page("Käyttäjä ei ole kirjautunut", "Virhe muokatessa arvostelua")
 
-            rating_id = db.query("SELECT id FROM ratings WHERE value = ?", [rating])
+            rating_id = reviews.get_rating(rating)
             if not rating_id:
                 return error.page("Virheellinen arvosana", "Virhe muokatessa arvostelua")
             rating_id = rating_id[0]["id"]

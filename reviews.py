@@ -31,6 +31,10 @@ def get_review(review_id):
     result = db.query(sql, [review_id])
     return result[0] if result else None
 
+def get_rating(rating):
+    sql = "SELECT id FROM ratings WHERE value = ?"
+    return db.query(sql, [rating])
+
 def update_review(review_id, review, rating_id):
     sql = """UPDATE reviews
             SET review = ?, rating_id = ?, created_at = DATETIME('now', '+2 hours')
