@@ -21,7 +21,7 @@
   </p>
   {% endif %}
   <p>
-    {{ movie.description }}
+    {{ movie.description | replace("\n", "<br>") | safe }}
   </p>
   <h2>Arvostelut</h2>
   {% for review in reviews %}
@@ -29,7 +29,7 @@
       <strong>{{ "★" * review.value }}</strong> - 
       <a href="/user/{{ review.user_id }}" onclick="event.stopPropagation();">
         {{ review.username }}</a>
-      <p>{{ review.review }}</p>
+      <p>{{ review.review | replace("\n", "<br>") | safe }}</p>
       <hr>
     </li>
   {% else %}

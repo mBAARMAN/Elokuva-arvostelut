@@ -13,7 +13,7 @@
   <p>
     <a href="/user/{{ comment.user_id }}">{{ comment.username }}</a> {{ comment.time }}
   </p>
-  <p>{{ comment.comment }}</p>
+  <p>{{ comment.comment | replace("\n", "<br>") | safe }}</p>
   <hr>
   <p>
     <button onclick="history.back()">Takaisin</button>

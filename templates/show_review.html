@@ -17,14 +17,14 @@
   <p>
     Arvosana: <strong>{{ "★" * review.rating_value }} </strong>
   </p>
-  <p>{{ review.review }}</p>
+  <p>{{ review.review | replace("\n", "<br>") | safe }}</p>
   <hr>
   <h3>Kommentit</h3>
   {% for comment in comments %}
     <li class="comment-item" onclick="location.href='/comment/{{ comment.id }}'">
       <a href="/user/{{ comment.user_id }}" onclick="event.stopPropagation();">
         {{ comment.username }}</a> {{ comment.time }}
-      <p>{{ comment.comment }}</p>
+      <p>{{ comment.comment | replace("\n", "<br>") | safe }}</p>
       <hr>
     </li>
   {% else %}
