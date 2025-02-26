@@ -1,3 +1,5 @@
+"""Module consisting of important functions used to access the database."""
+
 import sqlite3
 from flask import g
 
