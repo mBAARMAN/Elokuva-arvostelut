@@ -6,8 +6,8 @@
   <h2>Muokkaa arvostelua</h2>
   <form action="/edit_review/{{ review.id }}" method="post">
     <p>
-      Arvosana (1-5):
-      <input type="number" name="rating" value="{{ review.rating_value }}" min="1" max="5" required /> &#9733
+      <label for="rating">Arvosana (1-5):</label>
+      <input type="number" id="rating" name="rating" value="{{ review.rating_value }}" min="1" max="5" required /> &#9733
     </p>
     <p>
       <textarea name="review" rows="8" cols="60" maxlength="1000" required>{{ review.review }}</textarea>

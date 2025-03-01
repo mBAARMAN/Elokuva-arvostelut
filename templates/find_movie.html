@@ -9,7 +9,8 @@
   <form action="/find_movie" method="get">
     <p>Hae elokuvaa elokuvan nimen, kuvauksen tai ohjaajan nimen perusteella.</p>
     <p>
-      Hakusana: <input type="text" name="query" value="{{ query }}">
+      <label for="query">Hakusana: </label>
+      <input type="text" id="query" name="query" value="{{ query }}">
     </p>
     <input type="submit" value="Lähetä">
   </form>

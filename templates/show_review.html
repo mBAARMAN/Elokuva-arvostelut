@@ -30,10 +30,10 @@
   {% else %}
     Ei kommentteja.
   {% endfor %}
-  <h3>Uusi kommentti</h3>
+  <label for="comment"><h3>Uusi kommentti</h3></label>
   <form action="/create_comment" method="post">
     <p>
-      <textarea name="comment" rows="8" cols="60" maxlength="1000" required></textarea>
+      <textarea id="comment" name="comment" rows="8" cols="60" maxlength="1000" required></textarea>
     </p>
     <p>
       <input type="hidden" name="review_id" value="{{ review.id }}">

@@ -3,7 +3,7 @@
 {% block title %}Kommentti: {{ comment.id }}{% endblock %}
 
 {% block content %}
-  <h2>Vastaus käyttäjän {{ review.user_id }} arvosteluun</h2>
+  <h2>Vastaus käyttäjän {{ review.username }} arvosteluun</h2>
   {% if session.user_id == comment.user_id %}
   <p>
     <a href="/edit_comment/{{ comment.id }}">Muokkaa</a>

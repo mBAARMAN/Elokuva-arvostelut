@@ -14,12 +14,12 @@
   {% else %}
   <form action="/login" method="post">
     <p>
-      Tunnus: <br />
-      <input type="text" name="username" />
+      <label for="username">Tunnus:</label> <br />
+      <input type="text" id="username" name="username" />
     </p>
     <p>
-      Salasana: <br />
-      <input type="password" name="password" />
+      <label for="password">Salasana:</label> <br />
+      <input type="password" id="password" name="password" />
     </p>
     <input type="submit" value="Kirjaudu" />
   </form>

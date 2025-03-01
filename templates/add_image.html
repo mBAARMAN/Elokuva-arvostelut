@@ -9,7 +9,8 @@
   </p>
   <form action="/add_image" method="post" enctype="multipart/form-data">
     <p>
-      Kuva: <input type="file" name="image" accept=".jpg" required/>
+      <label for ="image">Valitse kuva:</label> 
+      <input type="file" id = "image" name="image" accept=".jpg"/>
     </p>
     <input type="submit" name="confirm" value="Lähetä" />
     <input type="submit" name="back" value="Peruuta" />
