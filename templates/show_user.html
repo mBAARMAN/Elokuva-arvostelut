@@ -12,7 +12,7 @@
   {% if session.user_id == user.id %}
     {% if user.has_image %}
     <p>
-      <a href="/add_image">Päivitä profiilikuva</a>
+      <a href="/add_image">Vaihda profiilikuva</a>
       <a href="/remove_image">Poista profiilikuva</a>
     </p>
     {% else %}
@@ -35,7 +35,7 @@
     {% endfor %}
   </p>
 
-  <p>
-    <button onclick="history.back()">Takaisin</button>
-  </p>
+  <form action="/">
+    <input type="submit" value="Palaa etusivulle" />
+  </form>
 {% endblock %}

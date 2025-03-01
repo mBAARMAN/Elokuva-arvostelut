@@ -6,6 +6,21 @@ body {
     background-color: #f4f4f4;
   }
 
+  a {
+    text-decoration: none;
+  }
+
+  li {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  pre {
+    font-size: 16px;
+    font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, 
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  }
+
   .header {
     position: sticky;
     top: 0;
@@ -16,10 +31,10 @@ body {
     display: flex;
     align-items: center;
     width: 100%;
-    border-bottom: 3px solid #000000;
+    border: 3px solid #000000;
   }
 
-  .movie {
+  .item {
     border: 2px solid #000000;
     margin: 1em;
     padding: 0.2em 0.5em;
@@ -48,27 +63,61 @@ body {
   }
 
   .review-item {
-  cursor: pointer;
-  padding: 10px;
-  transition: background 0.2s;
+    display: block;
+    padding: 10px;
+    transition: background 0.2s;
+    border: 2px solid #000000;
+    margin: 1em;
+  }
+
+  .review-item a {
+    display: inline;
   }
 
   .review-item:hover {
-      background: #f0f0f0;
+    background: #f0f0f0;
+  }
+
+  .review-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .review-user {
+    display: underline;
   }
 
   .comment-item {
-  cursor: pointer;
-  padding: 10px;
-  transition: background 0.2s;
+    display: block;
+    padding: 10px;
+    transition: background 0.2s;
+    border: 2px solid #000000;
+    margin: 1em;
+  }
+
+  .comment-item a {
+    display: inline;
   }
 
   .comment-item:hover {
-      background: #f0f0f0;
+    background: #f0f0f0;
+  }
+
+  .comment-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
   }
 
   .profile-image {
     width: 200px;
     height: auto;
     border-radius: 10px;
+    border: 2px solid #000000;
+  }
+
+  .large-link {
+    font-size: 1.25em;
+    font-weight: bold;
   }

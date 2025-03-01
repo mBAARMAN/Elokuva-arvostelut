@@ -67,7 +67,7 @@ def get_movies():
     Returns:
         list of tuples: A list of (id, title) pairs representing movies.
     """
-    sql = "SELECT id, title FROM movies ORDER BY id DESC"
+    sql = "SELECT id, title, director, year FROM movies ORDER BY id DESC"
     return db.query(sql)
 
 def get_movie(movie_id):

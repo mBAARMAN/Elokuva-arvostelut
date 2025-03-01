@@ -21,16 +21,23 @@
   </p>
   {% endif %}
   <p>
-    {{ movie.description | replace("\n", "<br>") | safe }}
+    <pre>{{ movie.description | escape }}</pre>
   </p>
+  <hr>
   <h2>Arvostelut</h2>
   {% for review in reviews %}
-    <li class="review-item" onclick="location.href='/review/{{ review.id }}'">
-      <strong>{{ "★" * review.value }}</strong> - 
-      <a href="/user/{{ review.user_id }}" onclick="event.stopPropagation();">
-        {{ review.username }}</a>
-      <p>{{ review.review | replace("\n", "<br>") | safe }}</p>
-      <hr>
+    <li class="review-item">
+      <a href="/review/{{ review.id }}" class="review-link">
+        <strong>{{ "★" * review.value }}</strong> - 
+      </a>
+      <a href="/user/{{ review.user_id }}" class="review-user">
+        {{ review.username }}
+      </a>
+      <p>
+        <a href="/review/{{ review.id }}" class="review-link">
+        <pre>{{ review.review | escape }}</pre>
+        </a>
+      </p>
     </li>
   {% else %}
     Ei arvosteluja.
@@ -49,8 +56,8 @@
       <input type="submit" value="Arvostele" />
     </p>
   </form>
-  <p>
-    <button onclick="window.location.href='/'">Takaisin</button>
-  </p>
+  <form action="/">
+    <input type="submit" value="Palaa etusivulle" />
+  </form>
 
 {% endblock %}
