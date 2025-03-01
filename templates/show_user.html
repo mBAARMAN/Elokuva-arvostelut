@@ -4,6 +4,17 @@
 
 {% block content %}
   <h1>Käyttäjä {{ user.username }}</h1>
+
+  {% if user.has_image %}
+  <img src="/image/{{ user.id }}" />
+  {% endif %}
+
+  {% if session.user_id == user.id %}
+  <p>
+    <a href="/add_image">Lisää profiilikuva</a>
+  </p>
+  {% endif %}
+
   <p>
     <p>
       Käyttäjällä on yhteensä {{ reviews | length }} arvostelua
@@ -16,6 +27,7 @@
       <p>Ei arvosteluja.</p>
     {% endfor %}
   </p>
+
   <p>
     <button onclick="history.back()">Takaisin</button>
   </p>

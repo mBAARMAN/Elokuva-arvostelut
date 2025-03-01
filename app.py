@@ -3,7 +3,7 @@
 import sqlite3
 import re
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, make_response
 import config
 import movies
 import users
@@ -52,6 +52,42 @@ def show_user(user_id):
         return error.page("Käyttäjää ei löytynyt", "Virhe sivun hakemisessa")
     reviews_list = reviews.get_reviews_by_user(user_id)
     return render_template("show_user.html", user=user, reviews=reviews_list)
+
+@app.route("/add_image", methods=["GET", "POST"])
+def add_image():
+    """
+    """
+    require_login()
+
+    if request.method == "GET":
+        return render_template("add_image.html")
+    
+    if request.method == "POST":
+        file = request.files["image"]
+        if not file.filename.endswith(".jpg"):
+            return "VIRHE: väärä tiedostomuoto"
+
+        image = file.read()
+        if len(image) > 100 * 1024:
+            return "VIRHE: liian suuri kuva"
+        
+        user_id = session["user_id"]
+        if not user_id:
+            return error.page("Käyttäjää ei löytynyt", "Virhe profiilin muokkaamisessa")
+        users.update_image(user_id, image)
+        return redirect("/user/" + str(user_id))
+
+@app.route("/image/<int:user_id>")
+def show_image(user_id):
+    """
+    """
+    image = users.get_image(user_id)
+    if not image:
+        return error.page('Profiilikuvaa ei löytynyt', 'Virhe profiilikuvan hakemisessa')
+
+    response = make_response(bytes(image))
+    response.headers.set("Content-Type", "image/jpeg")
+    return response
 
 @app.route("/find_movie")
 def find_movie():

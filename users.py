@@ -17,7 +17,9 @@ def get_user(user_id):
         dict or None: a dictionary containing the user's 'id' and 'username'
                         if the user is found, else None.
     """
-    sql = """SELECT id, username FROM users WHERE id = ?"""
+    sql = """SELECT id, username, image IS NOT NULL has_image
+            FROM users
+            WHERE id = ?"""
     result = db.query(sql, [user_id])
     return result[0] if result else None
 
@@ -48,6 +50,33 @@ def create_user(username, password1):
     password_hash = generate_password_hash(password1)
     sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
     db.execute(sql, [username, password_hash])
+
+def update_image(user_id, image):
+    """Updates the profile picture of a user
+    
+    Args:
+        user_id: unique identification number for the user in the database.
+        image: jpg file the user wishes to use as their profile picture.
+    Returns:
+        None
+    """
+    sql = "UPDATE users SET image = ? WHERE id = ?"
+    db.execute(sql, [image, user_id])
+
+def get_image(user_id):
+    """Retrieves the profile picture the user has set.
+
+    Retrieves the user's profile picture from the database and returns it. If no profile picture
+    exists for the users, returns None.
+
+    Args:
+        user_id: unique identification number for the user in the database.
+    Returns:
+        image or None: profile picture of user if one exists, else None.
+    """
+    sql = "SELECT image FROM users WHERE id = ?"
+    result = db.query(sql, [user_id])
+    return result[0][0] if result else None
 
 def check_login(username, password):
     """Checks if the provided username and password match an existing user.
