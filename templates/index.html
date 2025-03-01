@@ -31,7 +31,8 @@
   <hr>
   <h2>Elokuvat</h2>
   {% for movie in movies %}
-  <li><a href="/movie/{{ movie.id }}">{{ movie.title }}</a></li>
-  <hr>
+  <div class="movie">
+  <a href="/movie/{{ movie.id }}">{{ movie.title }}</a>
+  </div>
   {% endfor %}
 {% endblock %}

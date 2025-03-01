@@ -3,7 +3,7 @@
 {% block title %}Kirjautuminen{% endblock %}
 
 {% block content %}
-
+  <h2>Kirjaudu sisään</h2>
   {% if session.username %}
   <p>
     Olet kirjautunut nimellä {{ session.username }}
@@ -28,4 +28,4 @@
   </p>
   {% endif %}
 
-  {% endblock %}
+{% endblock %}
