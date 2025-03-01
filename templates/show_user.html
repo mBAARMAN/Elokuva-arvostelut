@@ -6,13 +6,20 @@
   <h1>Käyttäjä {{ user.username }}</h1>
 
   {% if user.has_image %}
-  <img src="/image/{{ user.id }}" />
+  <img src="/image/{{ user.id }}" class="profile-image" />
   {% endif %}
 
   {% if session.user_id == user.id %}
-  <p>
-    <a href="/add_image">Lisää profiilikuva</a>
-  </p>
+    {% if user.has_image %}
+    <p>
+      <a href="/add_image">Päivitä profiilikuva</a>
+      <a href="/remove_image">Poista profiilikuva</a>
+    </p>
+    {% else %}
+    <p>
+      <a href="/add_image">Lisää profiilikuva</a>
+    </p>
+    {% endif %}
   {% endif %}
 
   <p>

@@ -53,7 +53,7 @@ def create_user(username, password1):
 
 def update_image(user_id, image):
     """Updates the profile picture of a user
-    
+
     Args:
         user_id: unique identification number for the user in the database.
         image: jpg file the user wishes to use as their profile picture.
@@ -77,6 +77,19 @@ def get_image(user_id):
     sql = "SELECT image FROM users WHERE id = ?"
     result = db.query(sql, [user_id])
     return result[0][0] if result else None
+
+def remove_image(user_id):
+    """
+    Deletes user's profile picture from the database.
+
+    Args:
+        user_id: The ID of the user whose profile picture is to be deleted.
+
+    Returns:
+        None
+    """
+    sql = "UPDATE users SET image = NULL WHERE id = ?"
+    db.execute(sql, [user_id])
 
 def check_login(username, password):
     """Checks if the provided username and password match an existing user.

@@ -9,8 +9,9 @@
   </p>
   <form action="/add_image" method="post" enctype="multipart/form-data">
     <p>
-      Kuva: <input type="file" name="image" accept=".jpg" />
+      Kuva: <input type="file" name="image" accept=".jpg" required/>
     </p>
-    <input type="submit" value="Lähetä" />
+    <input type="submit" name="confirm" value="Lähetä" />
+    <input type="submit" name="back" value="Peruuta" />
   </form>
 {% endblock %}

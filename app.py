@@ -61,20 +61,22 @@ def add_image():
 
     if request.method == "GET":
         return render_template("add_image.html")
-    
-    if request.method == "POST":
-        file = request.files["image"]
-        if not file.filename.endswith(".jpg"):
-            return "VIRHE: väärä tiedostomuoto"
 
-        image = file.read()
-        if len(image) > 100 * 1024:
-            return "VIRHE: liian suuri kuva"
-        
+    if request.method == "POST":
         user_id = session["user_id"]
         if not user_id:
             return error.page("Käyttäjää ei löytynyt", "Virhe profiilin muokkaamisessa")
-        users.update_image(user_id, image)
+
+        if "confirm" in request.form:
+            file = request.files["image"]
+            if not file.filename.endswith(".jpg"):
+                return "VIRHE: väärä tiedostomuoto"
+
+            image = file.read()
+            if len(image) > 100 * 1024:
+                return "VIRHE: liian suuri kuva"
+
+            users.update_image(user_id, image)
         return redirect("/user/" + str(user_id))
 
 @app.route("/image/<int:user_id>")
@@ -88,6 +90,32 @@ def show_image(user_id):
     response = make_response(bytes(image))
     response.headers.set("Content-Type", "image/jpeg")
     return response
+
+@app.route("/remove_image", methods=["GET", "POST"])
+def remove_image():
+    """
+    """
+    require_login()
+
+    user_id = session.get("user_id")
+    if not user_id:
+        return error.page('Käyttäjää ei löytynyt', 'Virhe profiilikuvan poistamisessa')
+
+    user = users.get_user(user_id)
+    if not user:
+        return error.page('Käyttäjää ei löytynyt', 'Virhe profiilikuvan poistamisessa')
+
+    image = users.get_image(user_id)
+    if not image:
+        return error.page('Profiilikuvaa ei löytynyt', 'Virhe profiilikuvan poistamisessa')
+
+    if request.method == "GET":
+        return render_template("remove_image.html", user=user)
+
+    if request.method == "POST":
+        if "remove" in request.form:
+            users.remove_image(user_id)
+        return redirect("/user/" + str(user_id))
 
 @app.route("/find_movie")
 def find_movie():
