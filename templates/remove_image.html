@@ -4,7 +4,7 @@
 
 {% block content %}
   <h1>Poista profiilikuva</h1>
-  <img src="/image/{{ user.id }}" class="profile-image"/>
+  <img src="/image/{{ user.id }}" alt="Käyttäjän {{ user.username }} profiilikuva" class="profile-image"/>
   <p>Haluatko varmasti poistaa profiilikuvasi?</p>
   <form action="remove_image" method="post">
     <input type="hidden" name="user_id" value="{{ user.id }}">
