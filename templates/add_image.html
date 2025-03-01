@@ -12,6 +12,7 @@
       <label for ="image">Valitse kuva:</label> 
       <input type="file" id = "image" name="image" accept=".jpg"/>
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" name="confirm" value="Lähetä" />
     <input type="submit" name="back" value="Peruuta" />
   </form>

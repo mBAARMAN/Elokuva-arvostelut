@@ -10,6 +10,7 @@
     </p>
     <p>
       <input type="hidden" name="review_id" value="{{ comment.review_id }}">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       <input type="submit" name="confirm" value="Muokkaa kommenttia" />
       <input type="submit" value="Peruuta" />
     </p>

@@ -39,6 +39,7 @@
     </p>
     {% endfor %}
     <input type="hidden" name="movie_id" value="{{ movie.id }}" />
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" name="confirm" value="Päivitä elokuvan tiedot" />
     <input type="submit" value="Peruuta" />
   </form>

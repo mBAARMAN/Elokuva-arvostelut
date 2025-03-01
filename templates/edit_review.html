@@ -14,6 +14,7 @@
     </p>
     <p>
       <input type="hidden" name="movie_id" value="{{ review.movie_id }}">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       <input type="submit" name="confirm" value="Muokkaa arvostelua" />
       <input type="submit" value="Peruuta" />
     </p>

@@ -42,6 +42,7 @@
     </p>
     <p>
       <input type="hidden" name="review_id" value="{{ review.id }}">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
       <input type="submit" value="Kommentoi" />
     </p>
   </form>

@@ -8,6 +8,7 @@
   <p>Haluatko varmasti poistaa profiilikuvasi?</p>
   <form action="remove_image" method="post">
     <input type="hidden" name="user_id" value="{{ user.id }}">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" name="remove" value="Poista">
     <input type="submit" name="back" value="Peruuta">
   </form>

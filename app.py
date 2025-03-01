@@ -2,6 +2,7 @@
 
 import sqlite3
 import re
+import secrets
 from flask import Flask
 from flask import redirect, render_template, request, session, make_response
 import config
@@ -23,6 +24,14 @@ def require_login():
     """
     if "user_id" not in session:
         return error.page("Kirjautuminen vaaditaan", "Virhe kirjautumisessa")
+
+def check_csrf():
+    """
+    """
+    if "csrf_token" not in request.form:
+        return error.page('Istuntoa ei voitu vahvistaa', 'Virhe istunnon tietojen hakemisessa')
+    if request.form["csrf_token"] != session["csrf_token"]:
+        return error.page('Istuntoa ei voitu vahvistaa', 'Virhe istunnon tietojen hakemisessa')
 
 @app.route("/")
 def index():
@@ -63,6 +72,7 @@ def add_image():
         return render_template("add_image.html")
 
     if request.method == "POST":
+        check_csrf()
         user_id = session["user_id"]
         if not user_id:
             return error.page("Käyttäjää ei löytynyt", "Virhe profiilin muokkaamisessa")
@@ -113,6 +123,7 @@ def remove_image():
         return render_template("remove_image.html", user=user)
 
     if request.method == "POST":
+        check_csrf()
         if "remove" in request.form:
             users.remove_image(user_id)
         return redirect("/user/" + str(user_id))
@@ -200,6 +211,7 @@ def new_movie():
         rendered template: The rendered template for creating a new movie.
     """
     require_login()
+
     classes = movies.get_all_classes()
     return render_template("new_movie.html", classes=classes)
 
@@ -214,6 +226,7 @@ def create_movie():
         page on failure.
     """
     require_login()
+    check_csrf()
 
     title = request.form["title"]
     if not title or len(title) > 50 or not title.strip():
@@ -262,6 +275,7 @@ def create_review():
         page on failure.
     """
     require_login()
+    check_csrf()
 
     rating = int(request.form["rating"])
     review = request.form["review"]
@@ -297,6 +311,7 @@ def create_comment():
         page on failure.
     """
     require_login()
+    check_csrf()
 
     comment = request.form["comment"]
     review_id = request.form["review_id"]
@@ -329,11 +344,11 @@ def edit_movie(movie_id):
         or an error page if the user cannot edit the movie.
     """
     require_login()
-    movie = movies.get_movie(movie_id)
+    check_csrf()
 
+    movie = movies.get_movie(movie_id)
     if not movie:
         return error.page("Elokuvaa ei löytynyt", "Virhe muokatessa elokuvan tietoja")
-
     if movie["user_id"] != session["user_id"]:
         return error.page("Käyttäjällä ei ole oikeuksia muokata elokuvan tietoja",
                         "Virhe muokatessa elokuvan tietoja")
@@ -359,6 +374,7 @@ def update_movie():
         an error page on failure.
     """
     require_login()
+    check_csrf()
     movie_id = request.form["movie_id"]
     movie = movies.get_movie(movie_id)
 
@@ -429,6 +445,7 @@ def edit_review(review_id):
                     "Virhe muokatessa arvostelua")
 
     if request.method == "POST":
+        check_csrf()
         if "confirm" in request.form:
 
             rating = int(request.form["rating"])
@@ -482,6 +499,7 @@ def edit_comment(comment_id):
                     "Virhe muokatessa kommenttia")
 
     if request.method == "POST":
+        check_csrf()
         if "confirm" in request.form:
 
             comment = request.form["comment"].strip()
@@ -529,6 +547,7 @@ def remove_movie(movie_id):
         return render_template("remove_movie.html", movie=movie)
 
     if request.method == "POST":
+        check_csrf()
         if "remove" in request.form:
             movies.remove_movie(movie_id)
             return redirect("/")
@@ -562,6 +581,7 @@ def remove_review(review_id):
         return render_template("remove_review.html", review=review)
 
     if request.method == "POST":
+        check_csrf()
         if "remove" in request.form:
             reviews.remove_review(review_id)
             return redirect("/movie/" + str(review["movie_id"]))
@@ -595,6 +615,7 @@ def remove_comment(comment_id):
         return render_template("remove_comment.html", comment=comment)
 
     if request.method == "POST":
+        check_csrf()
         if "remove" in request.form:
             comments.remove_comment(comment_id)
             return redirect("/review/" + str(comment["review_id"]))
@@ -657,6 +678,7 @@ def login():
         if user_id:
             session["user_id"] = user_id
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
         return error.page("Virheellinen käyttäjätunnus/salasana", "Virhe kirjautumisessa")
     return render_template("login.html")
